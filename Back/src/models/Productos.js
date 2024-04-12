@@ -5,7 +5,7 @@
 -precio
 -cantidad
 -Id
-
+-nevera: id del grupo 
 
 Los tipos podran ser  :   "Granos.""Verduras.""Frutas.""Productos lácteos.""Carne.","Pescados"
 Cantidad sera en gramos
@@ -20,7 +20,8 @@ const ProductoSchema = new mongoose.Schema({
     imagen: String,
     tipo:  { type: String, enum: ["Granos.","Verduras.","Frutas.","Productos lácteos.","Carne.","Pescados"] },
     cantidad:Number,
-    precio: Number
+    precio: Number,
+    nevera:Number
 }, { timestamps: true })
 
 const Producto = mongoose.model("Producto", ProductoSchema)
