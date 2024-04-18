@@ -1,8 +1,11 @@
 const Producto = require("../models/Productos");
-
+const Cuenta = require("../models/Cuenta")
+const Nevera = require("../models/Nevera")
 const ProductoController = {
+    
     async ShowListaTotal(req, res) {
         try {
+            console.log("hola")
             const Productos = await Producto.find();
             res.send(JSON.stringify(Productos))
         } catch (error) {
@@ -13,6 +16,8 @@ const ProductoController = {
     async ShowListaByIdNevera(req, res) {
         try {
             const Productos = await Producto.find();
+            const neveras=await Nevera.find();
+            console.log(neveras)
             ProductsMap = Productos.filter(Product => Product.nevera == req.params.nevera)
             res.send(JSON.stringify(ProductsMap))
         } catch (error) {
@@ -29,8 +34,21 @@ const ProductoController = {
             res.status(500).send(error);
         }
     },
-    async crearProducto(req,res){
-        
+    async crearProducto(req, res) {
+        const nombrenuevo = req.body.nombre
+        const id = Math.random() * (9999 - 1) + 1;
+        const Productos = await Producto.find();
+        const bandera = Productos.find(({ nombre }) => nombre === nombrenuevo);
+        if (!bandera) {
+            const { id, nombre, imagen, tipo, cantidad, precio } = req.body;
+            const creado = await Producto.create(req.body);
+            res.send(JSON.stringify(creado))
+        } else {
+
+            res.send(JSON.stringify("Error, Ya existe"))
+        }
+
+
     }
 };
 

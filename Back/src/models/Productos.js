@@ -18,10 +18,9 @@ const ProductoSchema = new mongoose.Schema({
     ID:Number,
     nombre: String,   
     imagen: String,
-    tipo:  { type: String, enum: ["Granos.","Verduras.","Frutas.","Productos lácteos.","Carne.","Pescados"] },
+    tipo:  { type: String, enum: ["Granos","Verduras","Frutas","Lacteos","Carne","Pescados"] },
     cantidad:Number,
-    precio: Number,
-    nevera:Number
+    precio: Number,    
 }, { timestamps: true })
 
 const Producto = mongoose.model("Producto", ProductoSchema)
