@@ -2,7 +2,7 @@ const Producto = require("../models/Productos");
 const Cuenta = require("../models/Cuenta")
 const Nevera = require("../models/Nevera")
 const ProductoController = {
-    
+
     async ShowListaTotal(req, res) {
         try {
             console.log("hola")
@@ -16,9 +16,9 @@ const ProductoController = {
     async ShowListaByIdNevera(req, res) {
         try {
             const Productos = await Producto.find();
-            const neveras=await Nevera.find();
+            const neveras = await Nevera.find();
             console.log(neveras)
-            ProductsMap = Productos.filter(Product => Product.nevera == req.params.nevera)
+            const ProductsMap = Productos.filter(Product => Product.nevera == req.params.nevera)
             res.send(JSON.stringify(ProductsMap))
         } catch (error) {
             console.log(error);

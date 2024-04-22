@@ -5,11 +5,20 @@ const Nevera = require("../models/Nevera")
 
 const NeveraController = {
 
-    async ShowNevera(req, res) {
+    async ShowNeveras(req, res) {
         try {
-            console.log("hola")
+          
             const Neveras = await Nevera.find();
             res.send(JSON.stringify(Neveras))
+        } catch (error) {
+            console.log(error)
+            res.status(500).send(error);
+        }
+    },
+    async ShowNeveraById(req, res) {
+        try {          
+            const nevera = await Nevera.findById(req.idNevera);
+            res.send(JSON.stringify(nevera))
         } catch (error) {
             console.log(error)
             res.status(500).send(error);
@@ -37,10 +46,10 @@ const NeveraController = {
     async ActualizarNevera(req, res) {
         const id = req.body.id
         const Neveras = await Nevera.find();
-        const existe = Neveras.find(({ id }) => id === id);
+        const existe = Neveras.find(({ nevera }) =>nevera.id === id);
         console.log(existe)
         if (existe) {
-            console.log(existe)
+            
             existe.Productos = req.body;
             await existe.save();
             res.send(JSON.stringify(existe))

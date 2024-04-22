@@ -6,9 +6,10 @@
 const mongoose = require("mongoose")
 
 const CuentaSchema = new mongoose.Schema({
-    email: String,   
+    email: String,
     password: String,
-    neveraId: Number  
+    neveraId: Number,
+    listas: Array
 }, { timestamps: true })
 
 const Cuenta = mongoose.model("cuenta", CuentaSchema)
