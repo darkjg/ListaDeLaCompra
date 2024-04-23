@@ -23,7 +23,7 @@ const Registro = () => {
         } if (!isEmailValid(email)) {
             setError('Por favor, introduce un correo electrónico válido');
             return;
-        }else {
+        } else {
             setError("")
             try {
                 const response = await fetch("http://localhost:3000/cuenta/crear", {
@@ -33,12 +33,16 @@ const Registro = () => {
                     },
                     body: JSON.stringify({ email, pass }),
                 });
-                
+
                 if (response.ok) {
                     alert("Registro exitoso");
                 } else {
-                    const data = await response.json();
-                    setError(data.message || "Error en el registro");
+                    if (response.status === 409) {
+                        setError("El usuario ya está registrado");
+                    } else {
+                        const data = await response.json();
+                        setError(data.message || "Error en el registro");
+                    }
                 }
             } catch (error) {
                 console.error("Error:", error);

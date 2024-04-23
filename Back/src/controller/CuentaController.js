@@ -15,7 +15,7 @@ const CuentaController = {
             const creada = await Cuenta.create(req.body);
             res.send(JSON.stringify(creada))
         } else {
-            res.send(JSON.stringify("Error la cuenta ya existe"))
+            res.status(409).send(JSON.stringify("Error la cuenta ya existe"))
         }
 
     },
