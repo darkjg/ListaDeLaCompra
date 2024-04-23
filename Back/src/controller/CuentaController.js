@@ -7,13 +7,21 @@ const { generateToken, verifyToken } = require('../middlewares/authMiddleware');
 const CuentaController = {
     async registro(req, res) {
         const { email, password, neveraId } = req.body;
-
+        console.log(req.body)
         const Cuentas = await Cuenta.find();
         const user = Cuentas.find((user) => user.email === email);
         console.log(user)
         if (!user) {
-            const creada = await Cuenta.create(req.body);
-            res.send(JSON.stringify(creada))
+            console.log(password)
+            const nuevoUsuario= await Cuenta.create({
+                email,
+                password,
+                neveraId
+            });
+
+
+            
+            res.send(JSON.stringify(nuevoUsuario))
         } else {
             res.status(409).send(JSON.stringify("Error la cuenta ya existe"))
         }

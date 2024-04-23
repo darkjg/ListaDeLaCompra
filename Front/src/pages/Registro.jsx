@@ -2,8 +2,8 @@ import { useState } from "react";
 
 const Registro = () => {
     const [email, setEmail] = useState("")
-    const [pass, setPass] = useState("")
-    const [confirmPass, setConfirmPass] = useState("");
+    const [password, setpassword] = useState("")
+    const [confirmpassword, setConfirmpassword] = useState("");
     const [error, setError] = useState("");
 
     // Expresión regular para verificar el formato de un correo electrónico
@@ -17,7 +17,7 @@ const Registro = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        if (pass !== confirmPass) {
+        if (password !== confirmpassword) {
             setError("Las contraseñas no coinciden");
             return;
         } if (!isEmailValid(email)) {
@@ -31,7 +31,7 @@ const Registro = () => {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ email, pass }),
+                    body: JSON.stringify({ email, password }),
                 });
 
                 if (response.ok) {
@@ -66,18 +66,18 @@ const Registro = () => {
                     <label>Contraseña:</label>
                     <input
                         type="password"
-                        id="pass"
-                        value={pass}
-                        onChange={(e) => setPass(e.target.value)}
+                        id="password"
+                        value={password}
+                        onChange={(e) => setpassword(e.target.value)}
                     />
                 </div>
                 <div>
                     <label>Confirmar contraseña:</label>
                     <input
                         type="password"
-                        id="confirPass"
-                        value={confirmPass}
-                        onChange={(e) => setConfirmPass(e.target.value)}
+                        id="confirpassword"
+                        value={confirmpassword}
+                        onChange={(e) => setConfirmpassword(e.target.value)}
                     />
                 </div>
                 <button type="submit">Registrase</button>
