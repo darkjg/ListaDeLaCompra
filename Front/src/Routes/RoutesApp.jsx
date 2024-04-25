@@ -5,12 +5,13 @@ import Login from "../pages/Login"
 import Registro from "../pages/Registro"
 import Nevera from "../pages/Nevera"
 import Productos from "../pages/Productos"
+import Navbar from '../componentes/Nav';
 
 function RoutesApp() {
     return (
 
         <Router>
-
+            <Navbar></Navbar>
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/Lista" element={<Lista />} />
