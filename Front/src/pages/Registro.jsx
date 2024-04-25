@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SERVER_URL from "../Config/config";
 
 const Registro = () => {
     const [email, setEmail] = useState("")
@@ -26,7 +27,7 @@ const Registro = () => {
         } else {
             setError("")
             try {
-                const response = await fetch("http://localhost:3000/cuenta/crear", {
+                const response = await fetch(`${SERVER_URL}/cuenta/crear`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

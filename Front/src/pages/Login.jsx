@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import SERVER_URL from "../Config/config";
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -9,7 +9,7 @@ function Login() {
         event.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:3000/cuenta/login", {
+            const response = await fetch(`${SERVER_URL}/cuenta/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

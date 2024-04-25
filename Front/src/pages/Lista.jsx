@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import SERVER_URL from "../Config/config";
 const ListaDeComprasPage = () => {
     const [email, setEmail] = useState('');
     const [productos, setProductos] = useState('');
@@ -15,7 +15,7 @@ const ListaDeComprasPage = () => {
 
     const CrearLista = async () => {
         try {
-            const response = await fetch('http://localhost:3000/lista/crear', {
+            const response = await fetch(`${SERVER_URL}/lista/crear`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ const ListaDeComprasPage = () => {
 
     const ActualizarLista = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/lista/actualizar/${lista.id}`, {
+            const response = await fetch(`${SERVER_URL}/lista/actualizar/${lista.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
