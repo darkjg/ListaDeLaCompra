@@ -5,6 +5,7 @@ const ListaController = {
     async CrearLista(req, res) {
         try {
             const cuenta = await Cuenta.findOne({ email: req.body.email });
+            
             console.log(cuenta)
             if (cuenta) {
                 const id = Math.random() * (9999 - 1) + 1;

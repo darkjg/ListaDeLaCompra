@@ -16,11 +16,11 @@ function Login() {
                 },
                 body: JSON.stringify({ email, password }),
             });
-            
+
             if (response.ok) {
-               const data = await response.json();
-                
-                localStorage.setItem("token", data.token); 
+                const data = await response.json();
+                localStorage.setItem("user", data.user.email);
+                localStorage.setItem("token", data.token);
                 alert("Inicio de sesión exitoso");
 
             } else {
