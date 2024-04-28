@@ -1,6 +1,6 @@
 const Lista = require("../models/ListaDeLaCompra")
 const Cuenta = require("../models/Cuenta")
-
+const Nevera = require("../models/Nevera");
 const ListaController = {
     async CrearLista(req, res) {
         try {
@@ -98,6 +98,37 @@ const ListaController = {
             res.status(500).send(JSON.stringify("Error interno del servidor"));
         }
     },
+    async CompletarLista(req, res) {
+        try {
+            const listaId = req.params.id;
+            
+            const lista = await Lista.findById(listaId);
+           
+            if (!lista) {
+                return res.status(404).send("Lista no encontrada");
+            }
+
+            const productos = lista.Productos;
+
+           
+            const nevera = await Nevera.findOne({ nombre: "Nombre de tu nevera" }); 
+            if (!nevera) {
+                return res.status(404).send("Nevera no encontrada");
+            }
+
+            // Agregar los productos a la nevera
+            nevera.Productos.push(...productos);
+            await nevera.save();
+
+            // Eliminar la lista
+            await lista.remove();
+
+            res.send("Lista completada con éxito");
+        } catch (error) {
+            console.error("Error al completar lista:", error);
+            res.status(500).send("Error al completar lista");
+        }
+    }
 };
 
 module.exports = ListaController;

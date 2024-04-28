@@ -13,6 +13,7 @@ const ListaPagina = () => {
     const [nuevoNombreLista, setNuevoNombreLista] = useState('');
     const [nuevoProducto, setNuevoProducto] = useState('');
     const [nuevaCantidad, setNuevaCantidad] = useState('');
+    const [tipoCantidad, setTipoCantidad] = useState('unidades');
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -26,6 +27,7 @@ const ListaPagina = () => {
                 }
                 const data = await response.json();
                 setLista(data);
+                setError()
             } catch (error) {
                 console.error('Error al obtener la lista:', error);
                 setError('Error al obtener la lista');
@@ -46,6 +48,9 @@ const ListaPagina = () => {
     const ChangeNuevaCantidad = (event) => {
         setNuevaCantidad(event.target.value);
     };
+    const ChangeTipoCantidad = (event) => {
+        setTipoCantidad(event.target.value);
+    };
 
     const ActualizarNombreLista = async () => {
         try {
@@ -62,6 +67,7 @@ const ListaPagina = () => {
             }
             const data = await response.json();
             setLista(data);
+            setError()
         } catch (error) {
             console.error('Error al actualizar el nombre de la lista:', error);
             setError('Error al actualizar el nombre de la lista');
@@ -70,7 +76,12 @@ const ListaPagina = () => {
 
     const AgregarProducto = async () => {
         try {
-            lista.Productos.push({ nombre: nuevoProducto, cantidad: nuevaCantidad, comprado: false })
+
+            if (!nuevoProducto || !nuevaCantidad || !tipoCantidad) {
+                setError('Por favor, completa todos los campos.');
+                return;
+            }
+            lista.Productos.push({ nombre: nuevoProducto, cantidad: nuevaCantidad, tipo: tipoCantidad, comprado: false })
 
 
             const response = await fetch(`${SERVER_URL}/lista/actualizar/${id}`, {
@@ -90,6 +101,7 @@ const ListaPagina = () => {
             //   console.log(lista)
             setNuevoProducto('');
             setNuevaCantidad('');
+            setError()
         } catch (error) {
             console.error('Error al agregar producto:', error);
             setError('Error al agregar producto');
@@ -117,32 +129,55 @@ const ListaPagina = () => {
 
             setNuevoProducto('');
             setNuevaCantidad('');
+            setError()
         } catch (error) {
             console.error('Error al agregar producto:', error);
             setError('Error al agregar producto');
         }
     };
-    const marcarComprado = async (producto) => {
+
+    const marcarComprado = async (index) => {
         try {
             const listaActualizada = { ...lista };
-            const index = listaActualizada.Productos.findIndex((p) => p.nombre === producto.nombre);
-            listaActualizada.Productos[index].comprado = !listaActualizada.Productos[index].comprado;
 
-            const response = await fetch(`${SERVER_URL}/lista/actualizar/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(listaActualizada),
-            });
+            // Verificar si el índice está dentro de los límites de la lista
+            if (index >= 0 && index < listaActualizada.Productos.length) {
+                listaActualizada.Productos[index].comprado = !listaActualizada.Productos[index].comprado;
 
-            if (!response.ok) {
-                throw new Error('Failed to add product');
-            } setLista(listaActualizada);
+                const response = await fetch(`${SERVER_URL}/lista/actualizar/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(listaActualizada),
+                });
 
+                if (!response.ok) {
+                    throw new Error('Failed to update product');
+                }
+                setLista(listaActualizada);
+            } else {
+                throw new Error('Invalid index');
+            }
         } catch (error) {
             console.error('Error al marcar producto:', error);
             setError('Error al marcar producto');
+        }
+    };
+    const completarLista = async () => {
+        console.log(id)
+        try {
+            const response = await fetch(`${SERVER_URL}/lista/completar/${id}`, {
+                method: 'POST',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to complete list');
+            }
+
+            // Redirigir a la página de la nevera u otra página deseada
+        } catch (error) {
+            console.error('Error al completar la lista:', error);
         }
     };
 
@@ -154,10 +189,11 @@ const ListaPagina = () => {
 
     return (
         <div>
+            {error && <p>{error}</p>}
             {lista && (
                 <div>
                     <h1>{lista.NombreLista}</h1>
-
+                    <button onClick={completarLista}>Completar Lista</button>
                     <div>
                         <h2>Cambiar nombre de la lista:</h2>
                         <input type="text" value={nuevoNombreLista} onChange={ChangeNombreLista} />
@@ -165,25 +201,33 @@ const ListaPagina = () => {
                     </div>
                     <div>
                         <h2>Añadir producto:</h2>
-                        <input type="text" placeholder="Nombre del producto" value={nuevoProducto} onChange={ChangeNuevoProducto} />
-                        <input type="number" placeholder="Cantidad" value={nuevaCantidad} onChange={ChangeNuevaCantidad} />
+                        <input type="text" placeholder="Nombre del producto" value={nuevoProducto} onChange={ChangeNuevoProducto} required />
+                        <input type="number" placeholder="Cantidad" value={nuevaCantidad} onChange={ChangeNuevaCantidad} required />
+                        <select value={tipoCantidad} onChange={ChangeTipoCantidad} required>
+                            <option value="">Selecciona...</option>
+                            <option value="unidades">Unidades</option>
+                            <option value="kg">Kg</option>
+                            <option value="litros">Litros</option>
+                        </select>
                         <button onClick={AgregarProducto}>Añadir Producto</button>
                     </div>
+
                     <div>
                         <h2>Productos:</h2>
                         <ul>
-                            {lista.Productos.map((producto) => (
-                                <li key={producto.nombre} style={{ textDecoration: producto.comprado ? 'line-through' : 'none' }} onClick={() => marcarComprado(producto)} >
-
-                                    <div>{producto.nombre} :{producto.cantidad}</div>
+                            {lista.Productos.map((producto, index) => (
+                                <li key={producto.nombre} style={{ textDecoration: producto.comprado ? 'line-through' : 'none' }} onClick={() => index >= 0 && index < lista.Productos.length && marcarComprado(index)}>
+                                    <div>{producto.nombre} :{producto.cantidad} {producto.tipo}</div>
                                     <button onClick={() => EliminarProducto(producto.nombre)}>Eliminar</button>
                                 </li>
                             ))}
+
+
                         </ul>
                     </div>
                 </div>
             )}
-            {error && <p>{error}</p>}
+            
         </div>
     );
 };
