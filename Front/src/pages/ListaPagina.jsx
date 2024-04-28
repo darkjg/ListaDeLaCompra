@@ -93,22 +93,23 @@ const ListaPagina = () => {
 
     const EliminarProducto = async (nombre) => {
         try {
-            const listaNueva=lista.Productos.filter(producto => producto.nombre !== nombre);
+            lista.Productos=lista.Productos.filter(producto => producto.nombre !== nombre);
+            
             const response = await fetch(`${SERVER_URL}/lista/actualizar/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ listaNueva }),
+                body: JSON.stringify( lista ),
             });
 
             if (!response.ok) {
                 throw new Error('Failed to add product');
             }
             const data = await response.json();
-            console.log(data)
+            
             setLista(data);
-            console.log(lista)
+            
             setNuevoProducto('');
             setNuevaCantidad('');
         } catch (error) {
@@ -138,7 +139,7 @@ return (
                     <h2>Productos:</h2>
                     <ul>
                         {lista.Productos.map((producto) => (
-                            <li key={producto}>
+                            <li key={producto+ Math.floor(Math.random() * 999)}>
 
                                 <div>{producto.nombre} :{producto.cantidad}</div>
                                 <button onClick={() => EliminarProducto(producto.nombre)}>Eliminar</button>

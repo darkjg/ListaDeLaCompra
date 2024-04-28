@@ -27,7 +27,7 @@ const ListaController = {
             const id = req.params.id
 
             const lista = await Lista.findById(id);
-            console.log(req.body.Productos)
+            console.log(req.body)
             if (lista) {
 
                 lista.NombreLista = req.body.nombre || lista.NombreLista;
