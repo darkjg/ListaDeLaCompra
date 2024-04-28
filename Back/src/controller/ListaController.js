@@ -5,11 +5,12 @@ const ListaController = {
     async CrearLista(req, res) {
         try {
             const cuenta = await Cuenta.findOne({ email: req.body.email });
-            
+
             console.log(cuenta)
             if (cuenta) {
                 const id = Math.random() * (9999 - 1) + 1;
-                const lista = await Lista.create({ id });
+
+                const lista = await Lista.create({ id: id, NombreLista: "Nueva Lista" });
                 cuenta.listas.push(lista);
                 await cuenta.save();
                 res.send(JSON.stringify(lista));
@@ -23,19 +24,80 @@ const ListaController = {
     },
     async ActualizarLista(req, res) {
         try {
-            const lista = await Lista.findOne({ id: req.params.id });
+            const id = req.params.id
+
+            const lista = await Lista.findById(id);
+            console.log(req.body.Productos)
             if (lista) {
-                lista.Productos = req.body.productos;
-                await lista.save(); 
+
+                lista.NombreLista = req.body.nombre || lista.NombreLista;
+                lista.Productos = req.body.Productos || lista.Productos;
+              
+                const listaActualizada = await lista.save();
+                res.send(JSON.stringify(listaActualizada));
+
+            } else {
+                res.status(404).send(JSON.stringify("Error, Lista no encontrada"));
+            }
+
+        } catch (error) {
+            console.error("Error al actualizar lista:", error);
+            res.status(500).send(JSON.stringify("Error interno del servidor"));
+        }
+    },
+    async EliminarLista(req, res) {
+        try {
+            const id = req.params.id;
+
+            const lista = await Lista.findByIdAndDelete(id);
+
+            const cuenta = await Cuenta.findOne({ email: req.body.email });
+
+
+            if (lista && cuenta) {
+
+                cuenta.listas = cuenta.listas.filter(lista => lista._id.toString() !== id);
+
+                console.log(cuenta)
+                await cuenta.save();
+
+                res.send(JSON.stringify("Lista eliminada correctamente"));
+            } else {
+                res.status(404).send(JSON.stringify("Error, Lista no encontrada"));
+            }
+
+        } catch (error) {
+            console.error("Error al eliminar lista:", error);
+            res.status(500).send(JSON.stringify("Error interno del servidor"));
+        }
+    },
+    async BuscarListas(req, res) {
+        try {
+            const cuenta = await Cuenta.findOne({ email: req.params.email });
+            console.log(cuenta)
+            if (cuenta) {
+                res.send(JSON.stringify(cuenta.listas));
+            } else {
+                res.status(404).send(JSON.stringify("Error, Cuenta no encontrada"));
+            }
+        } catch (error) {
+            console.error("Error al buscar listas por email:", error);
+            res.status(500).send(JSON.stringify("Error interno del servidor"));
+        }
+    },
+    async ObtenerListaPorId(req, res) {
+        try {
+            const lista = await Lista.findById(req.params.id);
+            if (lista) {
                 res.send(JSON.stringify(lista));
             } else {
                 res.status(404).send(JSON.stringify("Error, Lista no encontrada"));
             }
         } catch (error) {
-            console.error("Error al actualizar lista:", error);
+            console.error("Error al obtener lista por ID:", error);
             res.status(500).send(JSON.stringify("Error interno del servidor"));
         }
-    }
+    },
 };
 
 module.exports = ListaController;

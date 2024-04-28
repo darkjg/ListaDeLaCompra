@@ -9,6 +9,7 @@ const ListaSchema = new mongoose.Schema({
 
     id: Number,   
     idCuenta:Number,
+    NombreLista:String,
     Productos: Array,   
 }, { timestamps: true })
 

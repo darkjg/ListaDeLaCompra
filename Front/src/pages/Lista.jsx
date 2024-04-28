@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import SERVER_URL from "../Config/config";
+
 const ListaDeComprasPage = () => {
     const [email, setEmail] = useState('');
-    const [productos, setProductos] = useState('');
-    const [lista, setLista] = useState(null);
+    const [listas, setListas] = useState([]);
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -11,8 +12,9 @@ const ListaDeComprasPage = () => {
         if (userEmail) {
             setEmail(userEmail);
         }
-    }, []);
-
+        BuscarListasPorEmail();
+    }, [email]);
+    
     const CrearLista = async () => {
         try {
             const response = await fetch(`${SERVER_URL}/lista/crear`, {
@@ -22,28 +24,59 @@ const ListaDeComprasPage = () => {
                 },
                 body: JSON.stringify({ email }),
             });
+            if (!response.ok) {
+                
+                throw new Error('Failed to create list');
+            }
+            setError(null)
             const data = await response.json();
-            console.log(data)
-            setLista(data);
+            setListas([...listas, data]);
         } catch (error) {
-            console.log(error)
+            console.error('Error al crear lista:', error);
             setError('Error al crear lista');
         }
     };
 
-    const ActualizarLista = async () => {
+    const BuscarListasPorEmail = async () => {
         try {
-            const response = await fetch(`${SERVER_URL}/lista/actualizar/${lista.id}`, {
-                method: 'PUT',
+            const response = await fetch(`${SERVER_URL}/lista/buscar/${email}`);
+            console.log(response)
+            if (response.ok) {
+                setError(null)
+                const data = await response.json();
+                console.log(data)
+                setListas(data);
+            } else {
+                setError('Error al buscar listas');
+            }
+        } catch (error) {
+            console.error('Error al buscar listas:', error);
+            setError('Error al buscar listas');
+        }
+    };
+
+    const EliminarLista = async (listaEnvio) => {
+
+        try {
+           console.log(listaEnvio)
+            const response = await fetch(`${SERVER_URL}/lista/eliminar/${listaEnvio._id}`, {
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ productos }),
-            });
-            const data = await response.json();
-            setLista(data);
+                body: JSON.stringify({ email }),
+            }
+            );
+            
+            if (response.ok) {
+                setError(null)
+                const filteredListas = listas.filter(lista => lista._id !== listaEnvio._id);
+                setListas(filteredListas);
+            } else {
+                setError('Error al eliminar lista');
+            }
         } catch (error) {
-            setError('Error al actualizar lista');
+            setError('Error al eliminar lista');
         }
     };
 
@@ -56,19 +89,19 @@ const ListaDeComprasPage = () => {
                     <button onClick={CrearLista}>Crear Lista</button>
                 </div>
             )}
-            {lista && (
+            {listas.length > 0 && (
                 <div>
-                    <h2>Lista:</h2>
+                    <h2>Listas:</h2>
                     <ul>
-                        {lista.Productos.map((producto, index) => (
-                            <li key={index}>{producto}</li>
+                        {listas.map(lista => (
+                            
+                            <li key={lista.id}>
+                                <Link to={`/lista/${lista._id}`}>{lista.NombreLista}</Link>
+                                <button onClick={() => BuscarListasPorEmail()}>Buscar Listas</button>
+                                <button onClick={() => EliminarLista(lista)}>Eliminar</button>
+                            </li>
                         ))}
                     </ul>
-                    <div>
-                        <label>Productos:</label>
-                        <input type="text" value={productos} onChange={(e) => setProductos(e.target.value)} />
-                        <button onClick={ActualizarLista}>Actualizar Lista</button>
-                    </div>
                 </div>
             )}
             {error && <p>{error}</p>}
@@ -77,3 +110,5 @@ const ListaDeComprasPage = () => {
 };
 
 export default ListaDeComprasPage;
+
+

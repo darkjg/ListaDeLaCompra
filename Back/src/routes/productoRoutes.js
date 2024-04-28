@@ -21,5 +21,8 @@ router.post("/cuenta/login",CuentaController.Login)
 
 router.post("/lista/crear", ListaController.CrearLista);
 router.put("/lista/actualizar/:id", ListaController.ActualizarLista);
+router.delete("/lista/eliminar/:id", ListaController.EliminarLista);
+router.get("/lista/buscar/:email", ListaController.BuscarListas);
+router.get('/lista/:id', ListaController.ObtenerListaPorId);
 
 module.exports = router;
