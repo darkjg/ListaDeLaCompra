@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import SERVER_URL from "../Config/config";
 
+
+
+
+
+
 const ListaPagina = () => {
     const { id } = useParams();
     const [lista, setLista] = useState(null);
@@ -15,7 +20,7 @@ const ListaPagina = () => {
             try {
 
                 const response = await fetch(`${SERVER_URL}/lista/${id}`);
-                console.log(response)
+                // console.log(response)
                 if (!response.ok) {
                     throw new Error('Failed to fetch');
                 }
@@ -65,9 +70,9 @@ const ListaPagina = () => {
 
     const AgregarProducto = async () => {
         try {
-            lista.Productos.push({ nombre: nuevoProducto, cantidad: nuevaCantidad })
-          
-            
+            lista.Productos.push({ nombre: nuevoProducto, cantidad: nuevaCantidad, comprado: false })
+
+
             const response = await fetch(`${SERVER_URL}/lista/actualizar/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -80,9 +85,9 @@ const ListaPagina = () => {
                 throw new Error('Failed to add product');
             }
             const data = await response.json();
-            console.log(data)
+            //    console.log(data)
             setLista(data);
-            console.log(lista)
+            //   console.log(lista)
             setNuevoProducto('');
             setNuevaCantidad('');
         } catch (error) {
@@ -93,65 +98,94 @@ const ListaPagina = () => {
 
     const EliminarProducto = async (nombre) => {
         try {
-            lista.Productos=lista.Productos.filter(producto => producto.nombre !== nombre);
-            
+            lista.Productos = lista.Productos.filter(producto => producto.nombre !== nombre);
+
             const response = await fetch(`${SERVER_URL}/lista/actualizar/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify( lista ),
+                body: JSON.stringify(lista),
             });
 
             if (!response.ok) {
                 throw new Error('Failed to add product');
             }
             const data = await response.json();
-            
+
             setLista(data);
-            
+
             setNuevoProducto('');
             setNuevaCantidad('');
         } catch (error) {
             console.error('Error al agregar producto:', error);
             setError('Error al agregar producto');
         }
-};
+    };
+    const marcarComprado = async (producto) => {
+        try {
+            const listaActualizada = { ...lista };
+            const index = listaActualizada.Productos.findIndex((p) => p.nombre === producto.nombre);
+            listaActualizada.Productos[index].comprado = !listaActualizada.Productos[index].comprado;
 
-return (
-    <div>
-        {lista && (
-            <div>
-                <h1>{lista.NombreLista}</h1>
+            const response = await fetch(`${SERVER_URL}/lista/actualizar/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(listaActualizada),
+            });
 
-                <div>
-                    <h2>Cambiar nombre de la lista:</h2>
-                    <input type="text" value={nuevoNombreLista} onChange={ChangeNombreLista} />
-                    <button onClick={ActualizarNombreLista}>Actualizar Nombre</button>
-                </div>
-                <div>
-                    <h2>Añadir producto:</h2>
-                    <input type="text" placeholder="Nombre del producto" value={nuevoProducto} onChange={ChangeNuevoProducto} />
-                    <input type="number" placeholder="Cantidad" value={nuevaCantidad} onChange={ChangeNuevaCantidad} />
-                    <button onClick={AgregarProducto}>Añadir Producto</button>
-                </div>
-                <div>
-                    <h2>Productos:</h2>
-                    <ul>
-                        {lista.Productos.map((producto) => (
-                            <li key={producto+ Math.floor(Math.random() * 999)}>
+            if (!response.ok) {
+                throw new Error('Failed to add product');
+            } setLista(listaActualizada);
 
-                                <div>{producto.nombre} :{producto.cantidad}</div>
-                                <button onClick={() => EliminarProducto(producto.nombre)}>Eliminar</button>
-                            </li>
-                        ))}
-                    </ul>
+        } catch (error) {
+            console.error('Error al marcar producto:', error);
+            setError('Error al marcar producto');
+        }
+    };
+
+
+
+
+
+
+
+    return (
+        <div>
+            {lista && (
+                <div>
+                    <h1>{lista.NombreLista}</h1>
+
+                    <div>
+                        <h2>Cambiar nombre de la lista:</h2>
+                        <input type="text" value={nuevoNombreLista} onChange={ChangeNombreLista} />
+                        <button onClick={ActualizarNombreLista}>Actualizar Nombre</button>
+                    </div>
+                    <div>
+                        <h2>Añadir producto:</h2>
+                        <input type="text" placeholder="Nombre del producto" value={nuevoProducto} onChange={ChangeNuevoProducto} />
+                        <input type="number" placeholder="Cantidad" value={nuevaCantidad} onChange={ChangeNuevaCantidad} />
+                        <button onClick={AgregarProducto}>Añadir Producto</button>
+                    </div>
+                    <div>
+                        <h2>Productos:</h2>
+                        <ul>
+                            {lista.Productos.map((producto) => (
+                                <li key={producto.nombre} style={{ textDecoration: producto.comprado ? 'line-through' : 'none' }} onClick={() => marcarComprado(producto)} >
+
+                                    <div>{producto.nombre} :{producto.cantidad}</div>
+                                    <button onClick={() => EliminarProducto(producto.nombre)}>Eliminar</button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        )}
-        {error && <p>{error}</p>}
-    </div>
-);
+            )}
+            {error && <p>{error}</p>}
+        </div>
+    );
 };
 
 export default ListaPagina;
