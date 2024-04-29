@@ -1,42 +1,58 @@
 .navbar {
-    display: flex;
-    
-    flex-direction: column;
-  
-    height: 100%;
-    background-color: #333;
-    color: #fff;
-  }
-  
-  .menu-toggle {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 1.5rem;
-    cursor: pointer;
-    align-self: flex-start;
-   
-  }
-  
-  .menu {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    opacity: 1; /* Por defecto, el menú está visible */
-    transition: opacity 0.3s ease; /* Transición de opacidad */
-  }
-  .menu.hidden {
-    opacity: 0; /* Si se oculta, establece la opacidad en 0 */
-  }
-  .menu li {
-    padding: 10px;
-  }
-  
-  .menu li a {
-    color: #fff;
-    text-decoration: none;
-  }
-  
-  .menu li a:hover {
-    text-decoration: underline;
-  }
+  display: flex;
+
+  flex-direction: column;
+
+  height: 100%;
+  background-color: #333;
+  color: #fff;
+}
+
+.menu-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  align-self: flex-start;
+
+}
+.menu-container {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+.menu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  opacity: 1;
+  /* Por defecto, el menú está visible */
+  transition: opacity 0.3s ease;
+  /* Transición de opacidad */
+}
+
+.menu.hidden {
+  opacity: 0;
+  /* Si se oculta, establece la opacidad en 0 */
+}
+
+.menu li {
+  padding: 10px;
+}
+
+.menu li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.menu li a:hover {
+  text-decoration: underline;
+}
+
+.user {
+  align-self: flex-start;
+  margin-right: 10px; 
+  white-space: nowrap; /* Evita que el nombre de usuario se divida en múltiples líneas */
+  overflow: hidden;/* Añade un espacio entre el botón de menú y el nombre de usuario */
+}
