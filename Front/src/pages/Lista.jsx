@@ -14,7 +14,7 @@ const ListaDeComprasPage = () => {
         }
         BuscarListasPorEmail();
     }, [email]);
-    
+
     const CrearLista = async () => {
         try {
             const response = await fetch(`${SERVER_URL}/lista/crear`, {
@@ -25,11 +25,12 @@ const ListaDeComprasPage = () => {
                 body: JSON.stringify({ email }),
             });
             if (!response.ok) {
-                
+
                 throw new Error('Failed to create list');
             }
             setError(null)
             const data = await response.json();
+            console.log(data)
             setListas([...listas, data]);
         } catch (error) {
             console.error('Error al crear lista:', error);
@@ -38,28 +39,48 @@ const ListaDeComprasPage = () => {
     };
 
     const BuscarListasPorEmail = async () => {
-        try {
-            const response = await fetch(`${SERVER_URL}/lista/buscar/${email}`);
-            console.log(response)
-            if (response.ok) {
-                setError(null)
-                const data = await response.json();
-                console.log(data)
-                setListas(data);
-            } else {
+        if (email)
+            try {
+                const response = await fetch(`${SERVER_URL}/lista/buscar/${email}`);
+
+                if (response.ok) {
+                    setError(null)
+
+                    const data = await response.json();
+                    try {
+                        data.map(async list => {
+                            const response2 = await fetch(`${SERVER_URL}/lista/${list}`);
+                            if (response2.ok) {
+                                setError(null)
+                                const data2 = await response2.json();
+                                const listaExists = listas.some(lista => lista.id === data2.id);
+                                if (!listaExists) {
+                                    setListas([...listas, data2]);
+                                }
+                            } else {
+                                setError('Error al buscar listas por id');
+                            }
+                        })
+
+                    } catch (error) {
+
+                    }
+
+
+                } else {
+                    setError('Error al buscar listas');
+                }
+            } catch (error) {
+                console.error('Error al buscar listas:', error);
                 setError('Error al buscar listas');
             }
-        } catch (error) {
-            console.error('Error al buscar listas:', error);
-            setError('Error al buscar listas');
-        }
     };
 
     const EliminarLista = async (listaEnvio) => {
 
         try {
-           console.log(listaEnvio)
-            const response = await fetch(`${SERVER_URL}/lista/eliminar/${listaEnvio._id}`, {
+            console.log(listaEnvio)
+            const response = await fetch(`${SERVER_URL}/lista/eliminar/${listaEnvio}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,7 +88,7 @@ const ListaDeComprasPage = () => {
                 body: JSON.stringify({ email }),
             }
             );
-            
+
             if (response.ok) {
                 setError(null)
                 const filteredListas = listas.filter(lista => lista._id !== listaEnvio._id);
@@ -94,8 +115,9 @@ const ListaDeComprasPage = () => {
                     <h2>Listas:</h2>
                     <ul>
                         {listas.map(lista => (
-                            
+
                             <li key={lista.id}>
+
                                 <Link to={`/lista/${lista._id}`}>{lista.NombreLista}</Link>
                                 <button onClick={() => BuscarListasPorEmail()}>Buscar Listas</button>
                                 <button onClick={() => EliminarLista(lista)}>Eliminar</button>

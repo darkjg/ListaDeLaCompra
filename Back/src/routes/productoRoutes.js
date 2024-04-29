@@ -6,12 +6,13 @@ const ListaController=require("../controller/ListaController.js")
 const router = express.Router();
 
 router.get("/", ProductoController.ShowListaTotal);
-router.get("/nevera/:nevera", ProductoController.ShowListaByIdNevera);
+
 router.get("/producto/:productId", ProductoController.showProductById);
 router.post("/producto",ProductoController.crearProducto)
 
+router.get("/nevera/:nevera", NeveraController.ShowNeveraById);
 router.post("/nevera/create",NeveraController.CrearNevera)
-router.put("/nevera/update",NeveraController.ActualizarNevera)
+router.put("/nevera/update/:neveraId",NeveraController.ActualizarNevera)
 
 
 router.post("/cuenta/crear",CuentaController.registro)

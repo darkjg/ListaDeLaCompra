@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import SERVER_URL from "../Config/config";
 
 
@@ -8,6 +9,7 @@ import SERVER_URL from "../Config/config";
 
 
 const ListaPagina = () => {
+    const navigate = useNavigate();
     const { id } = useParams();
     const [lista, setLista] = useState(null);
     const [nuevoNombreLista, setNuevoNombreLista] = useState('');
@@ -165,10 +167,15 @@ const ListaPagina = () => {
         }
     };
     const completarLista = async () => {
-        console.log(id)
+        const userEmail = localStorage.getItem('user');
         try {
             const response = await fetch(`${SERVER_URL}/lista/completar/${id}`, {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: userEmail }),
+
             });
 
             if (!response.ok) {
@@ -176,6 +183,7 @@ const ListaPagina = () => {
             }
 
             // Redirigir a la página de la nevera u otra página deseada
+            navigate('/Lista');
         } catch (error) {
             console.error('Error al completar la lista:', error);
         }
@@ -227,7 +235,7 @@ const ListaPagina = () => {
                     </div>
                 </div>
             )}
-            
+
         </div>
     );
 };

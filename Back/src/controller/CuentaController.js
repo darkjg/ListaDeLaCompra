@@ -22,7 +22,7 @@ const CuentaController = {
 
             // Crear una nevera asociada a la cuenta
             const nuevaNevera = await Nevera.create({
-                nombre: `${email}'s Nevera`,
+                nombre: `${email} Nevera`,
                 productos: []
             });
 
@@ -37,7 +37,7 @@ const CuentaController = {
         }
     },
     async ActualizarUsuarioNevera(req, res) {
-        const { email, password, neveraId } = req.body;
+        const { email,neveraId } = req.body;
         try {
             const user = await Cuenta.findOne({ email: email });
 
@@ -61,11 +61,11 @@ const CuentaController = {
 
         const user = Cuentas.find((user) => user.email === email && user.password === password);
 
-        console.log(user)
+        
         if (user) {
             const token = generateToken(user);
             req.session.token = token;
-            console.log(req.session.cookie)
+            
             res.send({ "user": user, "token": token })
         } else {
             res.status(401).json({ mensaje: 'Credenciales incorrectas' });

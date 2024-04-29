@@ -6,7 +6,7 @@ const ListaController = {
         try {
             const cuenta = await Cuenta.findOne({ email: req.body.email });
 
-            console.log(cuenta)
+
             if (cuenta) {
                 const id = Math.random() * (9999 - 1) + 1;
 
@@ -27,12 +27,12 @@ const ListaController = {
             const id = req.params.id
 
             const lista = await Lista.findById(id);
-            console.log(req.body)
+
             if (lista) {
 
                 lista.NombreLista = req.body.nombre || lista.NombreLista;
                 lista.Productos = req.body.Productos || lista.Productos;
-              
+
                 const listaActualizada = await lista.save();
                 res.send(JSON.stringify(listaActualizada));
 
@@ -48,7 +48,7 @@ const ListaController = {
     async EliminarLista(req, res) {
         try {
             const id = req.params.id;
-
+            console.log(id)
             const lista = await Lista.findByIdAndDelete(id);
 
             const cuenta = await Cuenta.findOne({ email: req.body.email });
@@ -57,8 +57,6 @@ const ListaController = {
             if (lista && cuenta) {
 
                 cuenta.listas = cuenta.listas.filter(lista => lista._id.toString() !== id);
-
-                console.log(cuenta)
                 await cuenta.save();
 
                 res.send(JSON.stringify("Lista eliminada correctamente"));
@@ -74,7 +72,7 @@ const ListaController = {
     async BuscarListas(req, res) {
         try {
             const cuenta = await Cuenta.findOne({ email: req.params.email });
-            console.log(cuenta)
+
             if (cuenta) {
                 res.send(JSON.stringify(cuenta.listas));
             } else {
@@ -87,7 +85,9 @@ const ListaController = {
     },
     async ObtenerListaPorId(req, res) {
         try {
+
             const lista = await Lista.findById(req.params.id);
+
             if (lista) {
                 res.send(JSON.stringify(lista));
             } else {
@@ -101,28 +101,50 @@ const ListaController = {
     async CompletarLista(req, res) {
         try {
             const listaId = req.params.id;
-            
+            const { email } = req.body;
             const lista = await Lista.findById(listaId);
-           
+
             if (!lista) {
                 return res.status(404).send("Lista no encontrada");
             }
 
             const productos = lista.Productos;
 
-           
-            const nevera = await Nevera.findOne({ nombre: "Nombre de tu nevera" }); 
+
+
+            // Buscar la cuenta por el correo electrónico proporcionado
+            const cuenta = await Cuenta.findOne({ email });
+            if (!cuenta) {
+                return res.status(404).send("Cuenta no encontrada");
+            }
+
+            const nevera = await Nevera.findById(cuenta.nevera);
+
             if (!nevera) {
                 return res.status(404).send("Nevera no encontrada");
             }
-
+            for (const producto of productos) {
+                // Buscar el índice del producto en la nevera por su nombre
+                const existingProductIndex = nevera.productos.findIndex(p => p.nombre === producto.nombre);
+                if (existingProductIndex !== -1) {
+                    // Si existe, actualizar la cantidad y el tipo
+                    nevera.productos[existingProductIndex].cantidad = producto.cantidad;
+                    nevera.productos[existingProductIndex].tipo = producto.tipo;
+                } else {
+                    // Si no existe, agregar el nuevo producto
+                    nevera.productos.push({
+                        nombre: producto.nombre,
+                        cantidad: producto.cantidad,
+                        tipo: producto.tipo
+                    });
+                }
+            }
             // Agregar los productos a la nevera
-            nevera.Productos.push(...productos);
-            await nevera.save();
-
+            // nevera.productos.push(...productos);
+            await Cuenta.updateOne({ _id: cuenta._id }, { $pull: { listas: listaId } });
             // Eliminar la lista
-            await lista.remove();
-
+            await Lista.findByIdAndDelete(listaId);
+            await nevera.save();
             res.send("Lista completada con éxito");
         } catch (error) {
             console.error("Error al completar lista:", error);
