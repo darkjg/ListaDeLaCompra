@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from "../pages/Home";
 import Lista from "../pages/Lista";
@@ -12,6 +12,12 @@ import ListaPagina from "../pages/ListaPagina";
 
 function RoutesApp() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            setIsLoggedIn(true);
+        }
+    }, []);
 
     const handleLogin = () => {
         setIsLoggedIn(true);
