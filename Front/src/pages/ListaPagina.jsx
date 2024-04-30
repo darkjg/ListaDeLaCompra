@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import SERVER_URL from "../Config/config";
 
@@ -12,10 +12,10 @@ const ListaPagina = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const [lista, setLista] = useState(null);
-    const [nuevoNombreLista, setNuevoNombreLista] = useState('');
-    const [nuevoProducto, setNuevoProducto] = useState('');
-    const [nuevaCantidad, setNuevaCantidad] = useState('');
-    const [tipoCantidad, setTipoCantidad] = useState('unidades');
+    const [nuevoNombreLista, setNuevoNombreLista] = useState("");
+    const [nuevoProducto, setNuevoProducto] = useState("");
+    const [nuevaCantidad, setNuevaCantidad] = useState("");
+    const [tipoCantidad, setTipoCantidad] = useState("unidades");
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -25,14 +25,14 @@ const ListaPagina = () => {
                 const response = await fetch(`${SERVER_URL}/lista/${id}`);
                 // console.log(response)
                 if (!response.ok) {
-                    throw new Error('Failed to fetch');
+                    throw new Error("Failed to fetch");
                 }
                 const data = await response.json();
                 setLista(data);
                 setError()
             } catch (error) {
-                console.error('Error al obtener la lista:', error);
-                setError('Error al obtener la lista');
+                console.error("Error al obtener la lista:", error);
+                setError("Error al obtener la lista");
             }
         };
 
@@ -57,22 +57,22 @@ const ListaPagina = () => {
     const ActualizarNombreLista = async () => {
         try {
             const response = await fetch(`${SERVER_URL}/lista/actualizar/${id}`, {
-                method: 'PUT',
+                method: "PUT",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ nombre: nuevoNombreLista }),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to update');
+                throw new Error("Failed to update");
             }
             const data = await response.json();
             setLista(data);
             setError()
         } catch (error) {
-            console.error('Error al actualizar el nombre de la lista:', error);
-            setError('Error al actualizar el nombre de la lista');
+            console.error("Error al actualizar el nombre de la lista:", error);
+            setError("Error al actualizar el nombre de la lista");
         }
     };
 
@@ -80,33 +80,33 @@ const ListaPagina = () => {
         try {
 
             if (!nuevoProducto || !nuevaCantidad || !tipoCantidad) {
-                setError('Por favor, completa todos los campos.');
+                setError("Por favor, completa todos los campos.");
                 return;
             }
             lista.Productos.push({ nombre: nuevoProducto, cantidad: nuevaCantidad, tipo: tipoCantidad, comprado: false })
 
 
             const response = await fetch(`${SERVER_URL}/lista/actualizar/${id}`, {
-                method: 'PUT',
+                method: "PUT",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(lista),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to add product');
+                throw new Error("Failed to add product");
             }
             const data = await response.json();
             //    console.log(data)
             setLista(data);
             //   console.log(lista)
-            setNuevoProducto('');
-            setNuevaCantidad('');
+            setNuevoProducto("");
+            setNuevaCantidad("");
             setError()
         } catch (error) {
-            console.error('Error al agregar producto:', error);
-            setError('Error al agregar producto');
+            console.error("Error al agregar producto:", error);
+            setError("Error al agregar producto");
         }
     };
 
@@ -115,26 +115,26 @@ const ListaPagina = () => {
             lista.Productos = lista.Productos.filter(producto => producto.nombre !== nombre);
 
             const response = await fetch(`${SERVER_URL}/lista/actualizar/${id}`, {
-                method: 'PUT',
+                method: "PUT",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(lista),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to add product');
+                throw new Error("Failed to add product");
             }
             const data = await response.json();
 
             setLista(data);
 
-            setNuevoProducto('');
-            setNuevaCantidad('');
+            setNuevoProducto("");
+            setNuevaCantidad("");
             setError()
         } catch (error) {
-            console.error('Error al agregar producto:', error);
-            setError('Error al agregar producto');
+            console.error("Error al agregar producto:", error);
+            setError("Error al agregar producto");
         }
     };
 
@@ -147,45 +147,45 @@ const ListaPagina = () => {
                 listaActualizada.Productos[index].comprado = !listaActualizada.Productos[index].comprado;
 
                 const response = await fetch(`${SERVER_URL}/lista/actualizar/${id}`, {
-                    method: 'PUT',
+                    method: "PUT",
                     headers: {
-                        'Content-Type': 'application/json',
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify(listaActualizada),
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to update product');
+                    throw new Error("Failed to update product");
                 }
                 setLista(listaActualizada);
             } else {
-                throw new Error('Invalid index');
+                throw new Error("Invalid index");
             }
         } catch (error) {
-            console.error('Error al marcar producto:', error);
-            setError('Error al marcar producto');
+            console.error("Error al marcar producto:", error);
+            setError("Error al marcar producto");
         }
     };
     const completarLista = async () => {
-        const userEmail = localStorage.getItem('user');
+        const userEmail = localStorage.getItem("user");
         try {
             const response = await fetch(`${SERVER_URL}/lista/completar/${id}`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ email: userEmail }),
 
             });
 
             if (!response.ok) {
-                throw new Error('Failed to complete list');
+                throw new Error("Failed to complete list");
             }
 
             // Redirigir a la página de la nevera u otra página deseada
-            navigate('/Lista');
+            navigate("/Lista");
         } catch (error) {
-            console.error('Error al completar la lista:', error);
+            console.error("Error al completar la lista:", error);
         }
     };
 
@@ -224,7 +224,7 @@ const ListaPagina = () => {
                         <h2>Productos:</h2>
                         <ul>
                             {lista.Productos.map((producto, index) => (
-                                <li key={producto.nombre} style={{ textDecoration: producto.comprado ? 'line-through' : 'none' }} onClick={() => index >= 0 && index < lista.Productos.length && marcarComprado(index)}>
+                                <li key={producto.nombre} style={{ textDecoration: producto.comprado ? "line-through" : "none" }} onClick={() => index >= 0 && index < lista.Productos.length && marcarComprado(index)}>
                                     <div>{producto.nombre} :{producto.cantidad} {producto.tipo}</div>
                                     <button onClick={() => EliminarProducto(producto.nombre)}>Eliminar</button>
                                 </li>

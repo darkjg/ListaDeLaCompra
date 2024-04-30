@@ -22,7 +22,7 @@ const Registro = () => {
             setError("Las contraseñas no coinciden");
             return;
         } if (!isEmailValid(email)) {
-            setError('Por favor, introduce un correo electrónico válido');
+            setError("Por favor, introduce un correo electrónico válido");
             return;
         } else {
             setError("")
@@ -38,7 +38,7 @@ const Registro = () => {
                 if (response.ok) {
                     alert("Registro exitoso");
                 } else {
-                    if (response.status === 409) {
+                    if (response.status == 409) {
                         setError("El usuario ya está registrado");
                     } else {
                         const data = await response.json();

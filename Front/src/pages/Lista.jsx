@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import SERVER_URL from "../Config/config";
 
 const ListaDeComprasPage = () => {
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState("");
     const [listas, setListas] = useState([]);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const userEmail = localStorage.getItem('user');
+        const userEmail = localStorage.getItem("user");
         if (userEmail) {
             setEmail(userEmail);
         }
@@ -18,23 +18,23 @@ const ListaDeComprasPage = () => {
     const CrearLista = async () => {
         try {
             const response = await fetch(`${SERVER_URL}/lista/crear`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ email }),
             });
             if (!response.ok) {
 
-                throw new Error('Failed to create list');
+                throw new Error("Failed to create list");
             }
             setError(null)
             const data = await response.json();
             console.log(data)
             setListas([...listas, data]);
         } catch (error) {
-            console.error('Error al crear lista:', error);
-            setError('Error al crear lista');
+            console.error("Error al crear lista:", error);
+            setError("Error al crear lista");
         }
     };
 
@@ -53,12 +53,12 @@ const ListaDeComprasPage = () => {
                             if (response2.ok) {
                                 setError(null)
                                 const data2 = await response2.json();
-                                const listaExists = listas.some(lista => lista.id === data2.id);
+                                const listaExists = listas.some(lista => lista.id == data2.id);
                                 if (!listaExists) {
                                     setListas([...listas, data2]);
                                 }
                             } else {
-                                setError('Error al buscar listas por id');
+                                setError("Error al buscar listas por id");
                             }
                         })
 
@@ -68,11 +68,11 @@ const ListaDeComprasPage = () => {
 
 
                 } else {
-                    setError('Error al buscar listas');
+                    setError("Error al buscar listas");
                 }
             } catch (error) {
-                console.error('Error al buscar listas:', error);
-                setError('Error al buscar listas');
+                console.error("Error al buscar listas:", error);
+                setError("Error al buscar listas");
             }
     };
 
@@ -81,9 +81,9 @@ const ListaDeComprasPage = () => {
         try {
             console.log(listaEnvio)
             const response = await fetch(`${SERVER_URL}/lista/eliminar/${listaEnvio}`, {
-                method: 'DELETE',
+                method: "DELETE",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ email }),
             }
@@ -94,10 +94,10 @@ const ListaDeComprasPage = () => {
                 const filteredListas = listas.filter(lista => lista._id !== listaEnvio._id);
                 setListas(filteredListas);
             } else {
-                setError('Error al eliminar lista');
+                setError("Error al eliminar lista");
             }
         } catch (error) {
-            setError('Error al eliminar lista');
+            setError("Error al eliminar lista");
         }
     };
 

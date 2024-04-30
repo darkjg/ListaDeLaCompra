@@ -32,12 +32,12 @@ function Navbar({ isLoggedIn, handleLogout }) {
                 {isLoggedIn ? (
                     <>
                         <li><Link to="/Nevera">Nevera</Link></li>
-                        <li><Link to="/Productos">Productos</Link></li>
+                        <li><Link to="/Lista">Lista</Link></li>      
                         <li><Link to="/" onClick={handleLogoutClick}>Logout</Link></li>
                     </>
                 ) : (
                     <>
-                        <li><Link to="/Lista">Lista</Link></li>      
+                        
                         <li><Link to="/Login">Login</Link></li>
                         <li><Link to="/Registro">Registro</Link></li>
                     </>

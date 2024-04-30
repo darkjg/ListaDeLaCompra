@@ -35,7 +35,7 @@ function Login({ onLogin ,onLogout}) { // Asegúrate de pasar props como paráme
                 setIsLoggedIn(true);
                 alert("Inicio de sesión exitoso");
                 // Llama a la función onLogin pasada como prop
-                if (typeof onLogin === 'function') {
+                if (typeof onLogin == "function") {
                     onLogin();
                 }
             } else {
@@ -49,7 +49,7 @@ function Login({ onLogin ,onLogout}) { // Asegúrate de pasar props como paráme
     };
 
     const handleLogout = () => {
-        if (typeof onLogout === 'function') {
+        if (typeof onLogout == "function") {
             onLogout();
         }
         localStorage.removeItem("user");

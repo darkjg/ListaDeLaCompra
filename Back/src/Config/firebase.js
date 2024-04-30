@@ -9,9 +9,9 @@ const {getAuth} = require("firebase/auth")
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 
-// Your web app's Firebase configuration
+// Your web app"s Firebase configuration
 const path = require("path");
-require('dotenv').config( {path:path.resolve( '.env')} );
+require("dotenv").config( {path:path.resolve( ".env")} );
 
 const firebaseConfig = {
   projectId: process.env.PROJECTID,

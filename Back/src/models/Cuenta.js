@@ -10,11 +10,11 @@ const CuentaSchema = new mongoose.Schema({
     password: String,
     nevera: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Nevera'
+        ref: "Nevera"
     },
     listas: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Lista'
+        ref: "Lista"
     }]
 }, { timestamps: true })
 
