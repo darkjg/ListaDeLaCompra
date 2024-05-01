@@ -45,14 +45,15 @@ function RecetasComponent() {
 
     const buscarRecetasPorProducto = async (nombreProducto) => {
         try {
-            const response = await fetch(`${SERVER_URL}/recetas/buscar/${nombreProducto}`);
+            const response = await fetch(`${SERVER_URL}/recetas/obtener/${nombreProducto}`);
             if (!response.ok) {
                 throw new Error("Error al buscar recetas por producto");
             }
             const data = await response.json();
             setRecetas(data);
+            setError(""); 
         } catch (err) {
-            setError(err.message);
+            setError(err.message); 
         }
     };
 
@@ -90,18 +91,18 @@ function RecetasComponent() {
                 const ingredientes = nevera.productos.map(item => item.nombre);
     
                 console.log(ingredientes)
-                const recetasPromises = ingredientes.map(async (ingrediente) => {
-                    const responseReceta = await fetch(`${SERVER_URL}/recetas/obtener/${ingrediente}`);
-                    if (!responseReceta.ok) {
-                        throw new Error(`Error al obtener recetas para el ingrediente ${ingrediente}`);
-                    }
-                    return responseReceta.json();
+                const responseRecetas = await fetch(`${SERVER_URL}/recetas/obtener`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ ingredientes: ingredientes }),
                 });
+                if (!responseRecetas.ok) {
+                    throw new Error("Error al obtener las recetas para los ingredientes");
+                }
+                const recetasResponses = await responseRecetas.json();
     
-
-                const recetasResponses = await Promise.all(recetasPromises);
-    
-   
                 setRecetas(recetasResponses);
             }
         } catch (err) {
@@ -112,7 +113,7 @@ function RecetasComponent() {
 
     const obtenerMejorRecetaDelMes = async () => {
         try {
-            const response = await fetch(`${SERVER_URL}/recetas/Top`);
+            const response = await fetch(`${SERVER_URL}/recetas/obtener/Top`);
             if (!response.ok) {
                 throw new Error("Error al obtener la mejor receta del mes");
             }

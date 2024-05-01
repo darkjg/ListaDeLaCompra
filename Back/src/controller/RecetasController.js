@@ -52,23 +52,57 @@ const RecetasController = {
         }
     },
 
-    async obtenerRecetasPorProducto(req, res) {
+    async obtenerRecetasPorIngredientes(req, res) {
         try {
-            const nombreProducto = req.params.nombreProducto;
-            const recetas = await Recetas.find({ "productos.nombre": nombreProducto });
-    
-           
-            if (recetas.length === 0) {
-                console.log("No se encontraron recetas para este producto");
-                
-                return;
+
+            const ingredientes = req.body.ingredientes;
+
+
+
+            const todasLasRecetas = await Recetas.find();
+
+
+            const recetasEnvio = todasLasRecetas.filter(receta => {
+
+                const ingredientesReceta = receta.ingredientes.map(ingrediente => ingrediente.nombre);
+
+                return ingredientesReceta.every(ingrediente => ingredientes.includes(ingrediente));
+            });
+
+
+            if (recetasEnvio.length === 0) {
+                return res.status(404).json({ message: "No se encontraron recetas que se puedan hacer con los ingredientes proporcionados" });
             }
-    
-            console.log(recetas + " Aquí están las recetas");
-            res.json(recetas);
+
+
+            console.log("Aquí están las recetas:", recetasEnvio);
+            res.json(recetasEnvio);
+
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: "Error al obtener las recetas" });
+        }
+    }, 
+    async obtenerRecetasPorIngrediente(req, res) {
+        try {
+            const nombreIngrediente = req.params.nombreIngrediente;
+
+           
+            const todasLasRecetas = await Recetas.find();
+
+         
+            const recetasConIngrediente = todasLasRecetas.filter(receta =>
+                receta.ingredientes.some(ingrediente => ingrediente.nombre === nombreIngrediente)
+            );
+
+            if (recetasConIngrediente.length === 0) {
+                return res.status(404).json({ message: `No se encontraron recetas que contengan el ingrediente '${nombreIngrediente}'` });
+            }
+
+            res.json(recetasConIngrediente);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: "Error al obtener las recetas por ingrediente" });
         }
     },
 
@@ -98,13 +132,20 @@ const RecetasController = {
     },
 
     async obtenerMejorRecetaDelMes(req, res) {
+
         try {
+
             const primerDiaMesActual = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
             const ultimoDiaMesActual = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+            console.log(primerDiaMesActual)
+            console.log(ultimoDiaMesActual)
 
-            const recetasMesActual = await Recetas.find({
-                createdAt: { $gte: primerDiaMesActual, $lte: ultimoDiaMesActual }
+            const todasLasRecetas = await Recetas.find();
+            const recetasMesActual = todasLasRecetas.filter(receta => {
+                const fechaCreacion = new Date(receta.createdAt);
+                return fechaCreacion >= primerDiaMesActual && fechaCreacion <= ultimoDiaMesActual;
             });
+
             let mejorPuntuacion = 0;
             let mejorReceta = null;
 
@@ -115,12 +156,15 @@ const RecetasController = {
                     mejorReceta = receta;
                 }
             });
+
             res.json(mejorReceta);
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: "Error al obtener la mejor receta del mes" });
         }
     },
+
+
     async obtenerRecetaPorId(req, res) {
         try {
             const recetaId = req.params.id;
