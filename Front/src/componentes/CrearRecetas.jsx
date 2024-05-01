@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { FaTimes } from "react-icons/fa";
 import SERVER_URL from "../Config/config";
-
+import { useNavigate } from "react-router-dom";
 function CrearRecetas() {
+    const navigate = useNavigate();
     const { id } = useParams();
     const [recetaEnEdicion, setRecetaEnEdicion] = useState(null);
     const [nombre, setNombre] = useState("");
@@ -80,14 +81,24 @@ function CrearRecetas() {
             return;
         }
         const nuevaReceta = { nombre, ingredientes, explicacion, puntuacion };
-
+    
         if (recetaEnEdicion) {
-            await actualizarReceta(recetaEnEdicion._id, nuevaReceta);
-            setRecetaEnEdicion(null);
+            try {
+                await actualizarReceta(recetaEnEdicion._id, nuevaReceta);
+                setRecetaEnEdicion(null);
+                navigate("/Recetas"); 
+            } catch (error) {
+                console.error("Error al actualizar la receta:", error);
+            }
         } else {
-            await crearReceta(nuevaReceta);
+            try {
+                await crearReceta(nuevaReceta);
+                navigate("/Recetas"); 
+            } catch (error) {
+                console.error("Error al crear la receta:", error);
+            }
         }
-
+    
         setNombre("");
         setIngredientes([{ nombre: "", cantidad: "", tipo: "" }]);
         setExplicacion("");
