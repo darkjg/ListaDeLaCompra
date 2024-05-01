@@ -69,7 +69,7 @@
           }),
         });
 
-      
+        // Recargar la nevera después de la actualización exitosa
         cargarnevera();
         setNuevoProducto("");
         setNuevaCantidad("");
@@ -94,9 +94,23 @@
 
     const eliminarProducto = async (nombreProducto) => {
       try {
-
+      
         const nuevaListaProductos = nevera.productos.filter(producto => producto.nombre !== nombreProducto);
-        setNevera({ ...nevera, productos: nuevaListaProductos });
+    
+       
+        const neveraActualizada = { ...nevera, productos: nuevaListaProductos };
+    
+       
+        setNevera(neveraActualizada);
+    
+        
+        await fetch(`${SERVER_URL}/nevera/update/${neveraId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(neveraActualizada)
+        });
       } catch (error) {
         console.error("Error al eliminar el producto:", error);
       }
@@ -104,22 +118,32 @@
 
     const handleGuardarCambios = async () => {
       try {
-        const productosActualizados = nevera.productos.map(producto => {
-          if (producto.nombre == productoEditando.nombre) {
+        // Actualizar el estado de la nevera con los productos editados
+        const neveraActualizada = { ...nevera, productos: nevera.productos.map(producto => {
+          if (producto.nombre === productoEditando.nombre) {
             return {
               ...producto,
               nombre: nombreEditando, 
-              cantidad: cantidadEditando != "" ? cantidadEditando : producto.cantidad,
-              tipo: tipoEditando != "" ? tipoEditando : producto.tipo
+              cantidad: cantidadEditando !== "" ? cantidadEditando : producto.cantidad,
+              tipo: tipoEditando !== "" ? tipoEditando : producto.tipo
             };
           }
           return producto;
+        })};
+    
+        // Actualizar el estado local con la nevera actualizada
+        setNevera(neveraActualizada);
+    
+        // Enviar los datos actualizados al servidor
+        await fetch(`${SERVER_URL}/nevera/update/${neveraId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(neveraActualizada)
         });
     
-      
-        setNevera({ ...nevera, productos: productosActualizados });
-    
-      
+        // Reiniciar los estados de edición
         setProductoEditando(null);
         setNombreEditando("");
         setCantidadEditando("");
@@ -132,7 +156,7 @@
       obtenerIdNeveraUsuario();
       cargarnevera();
 
-    }, [neveraId]); 
+    }, [neveraId]); // Se ejecuta solo una vez al cargar el componente
 
     return (
       <div>

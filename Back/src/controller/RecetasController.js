@@ -56,6 +56,15 @@ const RecetasController = {
         try {
             const nombreProducto = req.params.nombreProducto;
             const recetas = await Recetas.find({ "productos.nombre": nombreProducto });
+    
+           
+            if (recetas.length === 0) {
+                console.log("No se encontraron recetas para este producto");
+                
+                return;
+            }
+    
+            console.log(recetas + " Aquí están las recetas");
             res.json(recetas);
         } catch (err) {
             console.error(err);

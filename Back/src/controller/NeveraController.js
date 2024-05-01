@@ -48,36 +48,30 @@ const NeveraController = {
     },
 
     async ActualizarNevera(req, res) {
-        const { nombre, productos } = req.body;
+        const { nombre,productos } = req.body;
         const id = req.params.neveraId;
         
         try {
-            let nevera = await Nevera.findById(id);
+            let neveraExistente = await Nevera.findById(id);
            
-            if (!nevera) {
+            if (!neveraExistente) {
                 return res.status(404).json({ error: "La nevera no existe" });
             }
+    
+            // Actualizar el nombre de la nevera si se proporciona
             if (nombre) {
-                nevera.nombre = nombre;
+                neveraExistente.nombre = nombre
             }
+    
+            // Actualizar productos
             if (productos) {
-                // Verificar si el producto ya existe en la nevera
-                const existingProductIndex = nevera.productos.findIndex(p => p.nombre === productos.nombre);
-                if (existingProductIndex !== -1) {
-                    // Si existe, actualizar la cantidad y el tipo
-                    nevera.productos[existingProductIndex].cantidad = productos.cantidad;
-                    nevera.productos[existingProductIndex].tipo = productos.tipo;
-                } else {
-                    // Si no existe, agregar el nuevo producto
-                    nevera.productos.push({
-                        nombre: productos.nombre,
-                        cantidad: productos.cantidad,
-                        tipo: productos.tipo
-                    });
-                }
+                neveraExistente.productos = productos
             }
-            await nevera.save();
-            res.json(nevera);
+    
+            // Guardar los cambios en la base de datos
+            await neveraExistente.save();
+            
+            res.json(neveraExistente);
         } catch (error) {
             console.error("Error al actualizar la nevera:", error);
             res.status(500).json({ error: "Error interno del servidor" });

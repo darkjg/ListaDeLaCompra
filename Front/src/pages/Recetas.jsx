@@ -8,7 +8,7 @@ function RecetasComponent() {
     const [error, setError] = useState(null);
     const [email, setEmail] = useState("");
     const [nombreProducto, setNombreProducto] = useState("");
-  
+
     const navigate = useNavigate();
     const obtenerTodasRecetas = async () => {
         try {
@@ -23,7 +23,7 @@ function RecetasComponent() {
         }
     };
 
-   
+
     const actualizarReceta = async (id) => {
         navigate(`/CrearRecetas/${id}`);
     };
@@ -58,22 +58,57 @@ function RecetasComponent() {
 
     const obtenerRecetasDisponibles = async () => {
         try {
-            const response = await fetch(`${SERVER_URL}/recetasDisponibles`, {
+            const userEmail = localStorage.getItem("user");
+           
+            const responseNeveraId = await fetch(`${SERVER_URL}/cuenta/nevera`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email: userEmail }),
             });
-            if (!response.ok) {
-                throw new Error("Error al obtener recetas disponibles");
+            if (!responseNeveraId.ok) {
+                throw new Error("Error al obtener el ID de la nevera del usuario");
             }
-            const data = await response.json();
-            setRecetas(data);
+            const dataNeveraId = await responseNeveraId.json();
+            const neveraId = dataNeveraId.nevera;
+    
+            
+            if (neveraId) {
+                const responseNevera = await fetch(`${SERVER_URL}/nevera/${neveraId}`);
+                if (!responseNevera.ok) {
+                    throw new Error("Error al cargar la nevera");
+                }
+                const dataNevera = await responseNevera.json();
+                console.log(dataNevera.nevera)
+                const nevera = dataNevera.nevera;
+
+                
+    
+                console.log(nevera)
+          
+                const ingredientes = nevera.productos.map(item => item.nombre);
+    
+                console.log(ingredientes)
+                const recetasPromises = ingredientes.map(async (ingrediente) => {
+                    const responseReceta = await fetch(`${SERVER_URL}/recetas/obtener/${ingrediente}`);
+                    if (!responseReceta.ok) {
+                        throw new Error(`Error al obtener recetas para el ingrediente ${ingrediente}`);
+                    }
+                    return responseReceta.json();
+                });
+    
+
+                const recetasResponses = await Promise.all(recetasPromises);
+    
+   
+                setRecetas(recetasResponses);
+            }
         } catch (err) {
             setError(err.message);
         }
     };
+    
 
     const obtenerMejorRecetaDelMes = async () => {
         try {
@@ -92,7 +127,7 @@ function RecetasComponent() {
         obtenerTodasRecetas();
     }, []);
     const redirectToCrearRecetas = () => {
-        navigate("/CrearRecetas"); 
+        navigate("/CrearRecetas");
     };
     return (
         <div>
@@ -104,7 +139,7 @@ function RecetasComponent() {
             <input type="text" placeholder="Buscar recetas por producto" value={nombreProducto} onChange={(e) => setNombreProducto(e.target.value)} />
             <button onClick={() => buscarRecetasPorProducto(nombreProducto)}>Buscar</button>
             <button onClick={redirectToCrearRecetas}>Crear Recetas</button>
-            
+
             <ul>
                 {recetas.map((receta) => (
                     <li key={receta._id}>
@@ -112,7 +147,9 @@ function RecetasComponent() {
                         <button onClick={() => actualizarReceta(receta._id)}>
                             <FaEdit /> Actualizar
                         </button>
-                        {/* Otro código... */}
+                        <button onClick={() => eliminarReceta(receta._id)}>
+                            <FaTrash /> Eliminar
+                        </button>
                     </li>
                 ))}
             </ul>

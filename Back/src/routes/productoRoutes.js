@@ -33,7 +33,7 @@ router.get("/recetas/:id", RecetasController.obtenerRecetaPorId);
 router.post("/recetas", RecetasController.crearReceta);
 router.put("/recetas/:id", RecetasController.actualizarReceta);
 router.delete("/recetas/:id", RecetasController.eliminarReceta);
-router.get("/recetas/:nombreProducto", RecetasController.obtenerRecetasPorProducto);
+router.get("/recetas/obtener/:nombreProducto", RecetasController.obtenerRecetasPorProducto);
 router.get("/recetasDisponibles", RecetasController.obtenerRecetasDisponibles);
 router.get("/recetas/Top", RecetasController.obtenerMejorRecetaDelMes);
 
