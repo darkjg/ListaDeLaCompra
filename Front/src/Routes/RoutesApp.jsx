@@ -9,7 +9,8 @@ import Nevera from "../pages/Nevera";
 import Producto from "../pages/Producto";
 import Navbar from '../componentes/Nav';
 import ListaPagina from "../pages/ListaPagina";
-
+import Recetas from "../pages/Recetas"
+import CrearRecetas from "../componentes/CrearRecetas"
 function RoutesApp() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     useEffect(() => {
@@ -40,7 +41,8 @@ function RoutesApp() {
                 <Route path="/Nevera" element={<Nevera />} />
                 <Route path="/producto/:nombreProducto" element={<Producto/>} />
                 <Route path="/lista/:id" element={<ListaPagina />} />
-                
+                <Route path="/Recetas" element={<Recetas/>}/>
+                <Route path="/CrearRecetas" element={<CrearRecetas />} />
             </Routes>
         </Router>
     );

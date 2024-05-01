@@ -39,10 +39,12 @@ function Navbar({ isLoggedIn, handleLogout }) {
                     <>
                         <li><Link to="/Nevera">Nevera</Link></li>
                         <li><Link to="/Lista">Lista</Link></li>
+                        <li><Link to="/Recetas">Recetas</Link></li>
                         <li><Link to="/" onClick={handleLogoutClick}>Logout</Link></li>
                     </>
                 ) : (
                     <>
+                         <li><Link to="/Recetas">Recetas</Link></li>
                         <li><Link to="/Login">Login</Link></li>
                         <li><Link to="/Registro">Registro</Link></li>
                     </>

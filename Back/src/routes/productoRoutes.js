@@ -3,6 +3,7 @@ const ProductoController = require("../controller/ProductoController.js");
 const NeveraController =require("../controller/NeveraController.js");
 const CuentaController=require("../controller/CuentaController.js")
 const ListaController=require("../controller/ListaController.js")
+const RecetasController= require("../controller/RecetasController.js")
 const router = express.Router();
 
 router.get("/", ProductoController.ShowListaTotal);
@@ -26,4 +27,14 @@ router.delete("/lista/eliminar/:id", ListaController.EliminarLista);
 router.get("/lista/buscar/:email", ListaController.BuscarListas);
 router.get('/lista/:id', ListaController.ObtenerListaPorId);
 router.post("/lista/completar/:id", ListaController.CompletarLista);
+
+router.get("/recetas", RecetasController.obtenerTodasRecetas);
+router.post("/recetas", RecetasController.crearReceta);
+router.put("/recetas/:id", RecetasController.actualizarReceta);
+router.delete("/recetas/:id", RecetasController.eliminarReceta);
+router.get("/recetas/:nombreProducto", RecetasController.obtenerRecetasPorProducto);
+router.get("/recetasDisponibles", RecetasController.obtenerRecetasDisponibles);
+router.get("/recetas/Top", RecetasController.obtenerMejorRecetaDelMes);
+
+
 module.exports = router;
