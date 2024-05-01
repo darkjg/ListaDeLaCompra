@@ -111,6 +111,19 @@ const RecetasController = {
             console.error(err);
             res.status(500).json({ error: "Error al obtener la mejor receta del mes" });
         }
+    },
+    async obtenerRecetaPorId(req, res) {
+        try {
+            const recetaId = req.params.id;
+            const receta = await Recetas.findById(recetaId);
+            if (!receta) {
+                return res.status(404).json({ error: "Receta no encontrada" });
+            }
+            res.json(receta);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: "Error al obtener la receta por ID" });
+        }
     }
 }
 

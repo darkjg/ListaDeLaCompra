@@ -1,41 +1,56 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { FaTimes } from "react-icons/fa";
 import SERVER_URL from "../Config/config";
-import { FaTimes } from 'react-icons/fa';
+
 function CrearRecetas() {
-    const [nombre, setNombre] = useState('');
-    const [ingredientes, setIngredientes] = useState([{ nombre: '', cantidad: '', tipo: '' }]);
-    const [explicacion, setExplicacion] = useState('');
-    const [puntuacion, setPuntuacion] = useState(0);
+    const { id } = useParams();
     const [recetaEnEdicion, setRecetaEnEdicion] = useState(null);
+    const [nombre, setNombre] = useState("");
+    const [ingredientes, setIngredientes] = useState([{ nombre: "", cantidad: "", tipo: "" }]);
+    const [explicacion, setExplicacion] = useState("");
+    const [puntuacion, setPuntuacion] = useState(0);
+
+    useEffect(() => {
+        const obtenerDetallesReceta = async () => {
+            try {
+                const response = await fetch(`${SERVER_URL}/recetas/${id}`);
+                if (!response.ok) {
+                    throw new Error("Error al obtener detalles de la receta");
+                }
+                const data = await response.json();
+                if (data.length === 0) {
+                    console.log("No se encontró ninguna receta con el ID proporcionado.");
+                   
+                } else {
+                    console.log(data);
+                    setRecetaEnEdicion(data);
+                    setNombre(data.nombre);
+                    setIngredientes(data.ingredientes);
+                    setExplicacion(data.explicacion);
+                    setPuntuacion(data.puntuacion);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        if (id) {
+            obtenerDetallesReceta();
+        }
+    }, [id]);
 
     const crearReceta = async (nuevaReceta) => {
         try {
-            const response = await fetch(`${SERVER_URL}/recetas/${nuevaReceta.nombre}`);
-            if (!response.ok) {
-                throw new Error("Error al verificar la existencia de la receta");
-            }
-        
-            const clonedResponse = response.clone(); // Clonar la respuesta
-        
-            const responseData = await clonedResponse .json(); // Lerr La respuesta
-        
-            // Verificar si la receta ya existe
-            if (responseData.existe) {
-                throw new Error("La receta ya existe");
-            }
-        
-            
-            const crearResponse = await fetch(`${SERVER_URL}/recetas`, {
+            const response = await fetch(`${SERVER_URL}/recetas`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(nuevaReceta),
             });
-            if (!crearResponse.ok) {
+            if (!response.ok) {
                 throw new Error("Error al crear la receta");
             }
-            
         } catch (err) {
             console.error("Error al crear la receta:", err);
         }
@@ -53,89 +68,52 @@ function CrearRecetas() {
             if (!response.ok) {
                 throw new Error("Error al actualizar la receta");
             }
-            obtenerTodasRecetas();
         } catch (err) {
-            setError(err.message);
+            console.error("Error al actualizar la receta:", err);
         }
     };
 
-
-    const handleInputChange = (index, event) => {
-        const { name, value } = event.target;
-        if (name === 'nombre' || name === 'explicacion' || name === 'puntuacion') {
-            switch (name) {
-                case 'nombre':
-                    setNombre(value);
-                    break;
-                case 'explicacion':
-                    setExplicacion(value);
-                    break;
-                case 'puntuacion':
-                    setPuntuacion(parseFloat(value));
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            const list = [...ingredientes];
-            list[index][name] = value;
-            setIngredientes(list);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (nombre.trim() === "" || explicacion.trim() === "" || ingredientes.some(ingrediente => ingrediente.nombre.trim() === "" || ingrediente.cantidad === "" || ingrediente.tipo.trim() === "")) {
+            console.error("Todos los campos deben ser completados");
+            return;
         }
+        const nuevaReceta = { nombre, ingredientes, explicacion, puntuacion };
+
+        if (recetaEnEdicion) {
+            await actualizarReceta(recetaEnEdicion._id, nuevaReceta);
+            setRecetaEnEdicion(null);
+        } else {
+            await crearReceta(nuevaReceta);
+        }
+
+        setNombre("");
+        setIngredientes([{ nombre: "", cantidad: "", tipo: "" }]);
+        setExplicacion("");
+        setPuntuacion(0);
+    };
+
+    const handleIngredientChange = (index, event) => {
+        const { name, value } = event.target;
+        const list = [...ingredientes];
+        list[index][name] = value;
+        setIngredientes(list);
     };
 
     const handleAddIngredient = () => {
-        setIngredientes([...ingredientes, { nombre: '', cantidad: '', tipo: '' }]);
+        setIngredientes([...ingredientes, { nombre: "", cantidad: "", tipo: "" }]);
     };
+
     const handleRemoveIngredient = (index) => {
         const list = [...ingredientes];
         list.splice(index, 1);
         setIngredientes(list);
     };
 
-    const handleIngredientChange = (index, event) => {
-        const { name, value } = event.target;
-        if (name === 'cantidad') {
-            // Solo permitir números en el campo de cantidad
-            const re = /^[0-9\b]+$/; // Expresión regular para aceptar solo números
-            if (value === '' || re.test(value)) {
-                const list = [...ingredientes];
-                list[index]['cantidad'] = value;
-                setIngredientes(list);
-            }
-        } else if (name === 'nombre') {
-            const list = [...ingredientes];
-            list[index]['nombre'] = value;
-            setIngredientes(list);
-        } else {
-            const list = [...ingredientes];
-            list[index]['tipo'] = value;
-            setIngredientes(list);
-        }
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (nombre.trim() === '' || explicacion.trim() === '' || ingredientes.some(ingrediente => ingrediente.nombre.trim() === '' || ingrediente.cantidad === '' || ingrediente.tipo.trim() === '')) {
-            console.error('Todos los campos deben ser completados');
-            return;
-        }
-        const nuevaReceta = { nombre, ingredientes, explicacion, puntuacion };
-
-        if (recetaEnEdicion) {
-            await actualizarReceta(recetaEnEdicion, nuevaReceta);
-            setRecetaEnEdicion(null);
-        } else {
-            await crearReceta(nuevaReceta);
-        }
-
-        setNombre('');
-        setIngredientes([{ nombre: '', cantidad: '', tipo: '' }]);
-        setExplicacion('');
-        setPuntuacion(0);
-    };
     return (
         <>
-            <h2>{recetaEnEdicion ? 'Editar Receta' : 'Crear Nueva Receta'}</h2>
+            <h2>{recetaEnEdicion ? "Editar Receta" : "Crear Nueva Receta"}</h2>
             <form onSubmit={handleSubmit}>
                 <label>Nombre de la receta:</label>
                 <input
@@ -165,27 +143,27 @@ function CrearRecetas() {
                     />
                 </>
                 <h3>Ingredientes:</h3>
-                {ingredientes.map((ingrediente, index) => (
+                {ingredientes && ingredientes.map((ingrediente, index) => (
                     <div key={index}>
                         <label>Nombre:</label>
                         <input
                             type="text"
                             name="nombre"
                             value={ingrediente.nombre}
-                            onChange={(e) => handleIngredientChange(index, e)} // Usar handleIngredientChange en lugar de handleInputChange
+                            onChange={(e) => handleIngredientChange(index, e)}
                         />
                         <label>Cantidad:</label>
                         <input
                             type="text"
                             name="cantidad"
                             value={ingrediente.cantidad}
-                            onChange={(e) => handleInputChange(index, e)}
+                            onChange={(e) => handleIngredientChange(index, e)}
                         />
                         <label>Tipo:</label>
                         <select
                             name="tipo"
                             value={ingrediente.tipo}
-                            onChange={(e) => handleInputChange(index, e)}
+                            onChange={(e) => handleIngredientChange(index, e)}
                         >
                             <option value="">Seleccione...</option>
                             <option value="Kg">Kg</option>
@@ -196,7 +174,7 @@ function CrearRecetas() {
                         {index !== ingredientes.length - 1 && <button onClick={() => handleRemoveIngredient(index)}><FaTimes /></button>}
                     </div>
                 ))}
-                <button type="submit">{recetaEnEdicion ? 'Actualizar Receta' : 'Crear Receta'}</button>
+                <button type="submit">{recetaEnEdicion ? "Actualizar Receta" : "Crear Receta"}</button>
             </form>
         </>
     );

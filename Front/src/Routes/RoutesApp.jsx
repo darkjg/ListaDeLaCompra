@@ -1,13 +1,13 @@
 
-import React, { useState,useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState,useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Lista from "../pages/Lista";
 import Login from "../pages/Login";
 import Registro from "../pages/Registro";
 import Nevera from "../pages/Nevera";
 import Producto from "../pages/Producto";
-import Navbar from '../componentes/Nav';
+import Navbar from "../componentes/Nav";
 import ListaPagina from "../pages/ListaPagina";
 import Recetas from "../pages/Recetas"
 import CrearRecetas from "../componentes/CrearRecetas"
@@ -43,6 +43,7 @@ function RoutesApp() {
                 <Route path="/lista/:id" element={<ListaPagina />} />
                 <Route path="/Recetas" element={<Recetas/>}/>
                 <Route path="/CrearRecetas" element={<CrearRecetas />} />
+                <Route path="/CrearRecetas/:id?" element={<CrearRecetas />} />
             </Routes>
         </Router>
     );

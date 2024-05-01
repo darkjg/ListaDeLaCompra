@@ -29,6 +29,7 @@ router.get('/lista/:id', ListaController.ObtenerListaPorId);
 router.post("/lista/completar/:id", ListaController.CompletarLista);
 
 router.get("/recetas", RecetasController.obtenerTodasRecetas);
+router.get("/recetas/:id", RecetasController.obtenerRecetaPorId);
 router.post("/recetas", RecetasController.crearReceta);
 router.put("/recetas/:id", RecetasController.actualizarReceta);
 router.delete("/recetas/:id", RecetasController.eliminarReceta);
