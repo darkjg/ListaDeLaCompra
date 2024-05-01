@@ -1,5 +1,5 @@
 
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Lista from "../pages/Lista";
@@ -34,14 +34,14 @@ function RoutesApp() {
         <Router>
             <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
             <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
                 <Route path="/Lista" element={<Lista />} />
                 <Route path="/Login" element={<Login onLogin={handleLogin} onLogout={handleLogout} />} />
                 <Route path="/Registro" element={<Registro />} />
                 <Route path="/Nevera" element={<Nevera />} />
-                <Route path="/producto/:nombreProducto" element={<Producto/>} />
+                <Route path="/producto/:nombreProducto" element={<Producto />} />
                 <Route path="/lista/:id" element={<ListaPagina />} />
-                <Route path="/Recetas" element={<Recetas/>}/>
+                <Route path="/Recetas" element={<Recetas />} />
                 <Route path="/CrearRecetas" element={<CrearRecetas />} />
                 <Route path="/CrearRecetas/:id?" element={<CrearRecetas />} />
             </Routes>
