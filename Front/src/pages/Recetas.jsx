@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import SERVER_URL from "../Config/config";
 import { FaEdit, FaTrash } from "react-icons/fa";
-
 import { useNavigate } from "react-router-dom";
+import "../css/Recetas.css"
+
 function RecetasComponent() {
     const [recetas, setRecetas] = useState([]);
     const [error, setError] = useState(null);
@@ -51,16 +52,16 @@ function RecetasComponent() {
             }
             const data = await response.json();
             setRecetas(data);
-            setError(""); 
+            setError("");
         } catch (err) {
-            setError(err.message); 
+            setError(err.message);
         }
     };
 
     const obtenerRecetasDisponibles = async () => {
         try {
             const userEmail = localStorage.getItem("user");
-           
+
             const responseNeveraId = await fetch(`${SERVER_URL}/cuenta/nevera`, {
                 method: "POST",
                 headers: {
@@ -73,8 +74,8 @@ function RecetasComponent() {
             }
             const dataNeveraId = await responseNeveraId.json();
             const neveraId = dataNeveraId.nevera;
-    
-            
+
+
             if (neveraId) {
                 const responseNevera = await fetch(`${SERVER_URL}/nevera/${neveraId}`);
                 if (!responseNevera.ok) {
@@ -84,12 +85,12 @@ function RecetasComponent() {
                 console.log(dataNevera.nevera)
                 const nevera = dataNevera.nevera;
 
-                
-    
+
+
                 console.log(nevera)
-          
+
                 const ingredientes = nevera.productos.map(item => item.nombre);
-    
+
                 console.log(ingredientes)
                 const responseRecetas = await fetch(`${SERVER_URL}/recetas/obtener`, {
                     method: "POST",
@@ -102,14 +103,14 @@ function RecetasComponent() {
                     throw new Error("Error al obtener las recetas para los ingredientes");
                 }
                 const recetasResponses = await responseRecetas.json();
-    
+
                 setRecetas(recetasResponses);
             }
         } catch (err) {
             setError(err.message);
         }
     };
-    
+
 
     const obtenerMejorRecetaDelMes = async () => {
         try {
@@ -130,32 +131,40 @@ function RecetasComponent() {
     const redirectToCrearRecetas = () => {
         navigate("/CrearRecetas");
     };
-    return (
-        <div>
-            <h1>Recetas</h1>
-            {error && <p>Error: {error}</p>}
-            <button onClick={obtenerTodasRecetas}>Obtener todas las recetas</button>
-            <button onClick={obtenerRecetasDisponibles}>Obtener recetas disponibles</button>
-            <button onClick={obtenerMejorRecetaDelMes}>Obtener mejor receta del mes</button>
-            <input type="text" placeholder="Buscar recetas por producto" value={nombreProducto} onChange={(e) => setNombreProducto(e.target.value)} />
-            <button onClick={() => buscarRecetasPorProducto(nombreProducto)}>Buscar</button>
-            <button onClick={redirectToCrearRecetas}>Crear Recetas</button>
 
-            <ul>
+    return (
+        <div className="page-content">
+            <h1>Recetas</h1>
+            {error && <p className="error-message">Error: {error}</p>}
+            <div className="button-container">
+                <button onClick={obtenerTodasRecetas}>Obtener todas las recetas</button>
+                <button onClick={obtenerRecetasDisponibles}>Obtener recetas disponibles</button>
+                <button onClick={obtenerMejorRecetaDelMes}>Obtener mejor receta del mes</button>
+            </div>
+            <div className="search-container">
+                <input type="text" placeholder="Buscar recetas por producto" value={nombreProducto} onChange={(e) => setNombreProducto(e.target.value)} />
+                <button onClick={() => buscarRecetasPorProducto(nombreProducto)}>Buscar</button>
+            </div>
+            <button className="create-button" onClick={redirectToCrearRecetas}>Crear Recetas</button>
+
+            <ul className="recipe-list">
                 {recetas.map((receta) => (
                     <li key={receta._id}>
                         {receta.nombre}
-                        <button onClick={() => actualizarReceta(receta._id)}>
-                            <FaEdit /> Actualizar
-                        </button>
-                        <button onClick={() => eliminarReceta(receta._id)}>
-                            <FaTrash /> Eliminar
-                        </button>
+                        <div className="button-group">
+                            <button onClick={() => actualizarReceta(receta._id)}>
+                                <FaEdit /> Actualizar
+                            </button>
+                            <button onClick={() => eliminarReceta(receta._id)}>
+                                <FaTrash /> Eliminar
+                            </button>
+                        </div>
                     </li>
                 ))}
             </ul>
         </div>
     );
+
 }
 
 export default RecetasComponent;

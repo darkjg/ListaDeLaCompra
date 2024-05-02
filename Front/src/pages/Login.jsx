@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import SERVER_URL from "../Config/config";
-
+import { useNavigate } from "react-router-dom";
 function Login({ onLogin ,onLogout}) { // Asegúrate de pasar props como parámetro aquí
-
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -33,11 +33,12 @@ function Login({ onLogin ,onLogout}) { // Asegúrate de pasar props como paráme
                 localStorage.setItem("user", data.user.email);
                 localStorage.setItem("token", data.token);
                 setIsLoggedIn(true);
-                alert("Inicio de sesión exitoso");
+                navigate("/");
                 // Llama a la función onLogin pasada como prop
                 if (typeof onLogin == "function") {
                     onLogin();
                 }
+               
             } else {
                 const data = await response.json();
                 setError(data.message || "Error en el inicio de sesión");
@@ -61,10 +62,10 @@ function Login({ onLogin ,onLogout}) { // Asegúrate de pasar props como paráme
     };
 
     return (
-        <div>
+        <div className="page-content"> 
             {isLoggedIn ? (
                 <div>
-                    <h1>Sesión ya iniciada </h1>
+                    <h1>Sesión ya iniciada</h1>
                     <button onClick={handleLogout}>Cerrar sesión</button>
                 </div>
             ) : (
@@ -92,7 +93,7 @@ function Login({ onLogin ,onLogout}) { // Asegúrate de pasar props como paráme
                             />
                         </div>
                         <button type="submit">Iniciar sesión</button>
-                        {error && <div>{error}</div>}
+                        {error && <div className="error-message">{error}</div>}
                     </form>
                 </div>
             )}

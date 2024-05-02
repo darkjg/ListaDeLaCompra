@@ -104,7 +104,7 @@ const ListaDeComprasPage = () => {
                             <div>
                                 <h3>Usuario: {email}</h3>
                             </div>
-                            <button onClick={CrearLista}>Crear Lista</button>
+                            <button className="buton-Create" onClick={CrearLista}>Crear Lista</button>
                         </div>
                     </div>
                 )}
@@ -115,7 +115,7 @@ const ListaDeComprasPage = () => {
                     
                     {listas.map(lista => (
                         <div key={lista.id} className="card">
-                            <div className="flex-container">
+                            <div className="flex-container list-item">
                                 <Link to={`/lista/${lista._id}`}>{lista.NombreLista}</Link>
                                 <div className="button-container">
                                    

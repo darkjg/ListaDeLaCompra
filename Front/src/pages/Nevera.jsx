@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SERVER_URL from "../Config/config";
 import { FaEdit, FaTrash } from "react-icons/fa";
-
+import "../css/Nevera.css"
 
 const Nevera = () => {
 
@@ -15,6 +15,9 @@ const Nevera = () => {
   const [nombreEditando, setNombreEditando] = useState("");
   const [cantidadEditando, setCantidadEditando] = useState("");
   const [tipoEditando, setTipoEditando] = useState("");
+  const [nombreNeveraEditando, setNombreNeveraEditando] = useState("");
+
+
   // Función para cargar la lista de nevera 
   const cargarnevera = async () => {
     if (neveraId) {
@@ -22,11 +25,31 @@ const Nevera = () => {
         const response = await fetch(`${SERVER_URL}/nevera/${neveraId}`);
         const data = await response.json();
         setNevera(data.nevera);
+
       } catch (error) {
         console.error("Error al cargar las nevera:", error);
       }
     }
   };
+
+
+
+  const cambiarNombreNevera = async () => {
+    setNombreNeveraEditando(nevera.nombre)
+    const neveraActualizada = nevera
+    neveraActualizada.nombre = nombreNeveraEditando
+    setNevera(neveraActualizada);
+
+    // Enviar los datos actualizados al servidor
+    await fetch(`${SERVER_URL}/nevera/update/${nevera._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(neveraActualizada)
+    });
+
+  }
 
   // Función para obtener el ID de la nevera asociada al usuario
   const obtenerIdNeveraUsuario = async () => {
@@ -61,11 +84,11 @@ const Nevera = () => {
         tipo: tipoCantidad
       };
 
-      const productosExistente = nevera.productos || []; 
+      const productosExistente = nevera.productos || [];
       const productosActualizados = [...productosExistente, nuevoProductoData];
 
 
- 
+
       const requestData = {
         productos: productosActualizados
       };
@@ -170,34 +193,81 @@ const Nevera = () => {
   }, [neveraId]); // Se ejecuta solo una vez al cargar el componente
 
   return (
-    <div>
-      <h1>{nevera.nombre}</h1>
-
+    <div className="container">
+      <h1 className="title">
+        {nombreNeveraEditando !== "" ? (
+          <input
+            type="text"
+            value={nombreNeveraEditando}
+            onChange={(e) => setNombreNeveraEditando(e.target.value)}
+            className="input-edit"
+          />
+        ) : (
+          nevera.nombre
+        )}
+        {nombreNeveraEditando !== "" && (
+          <button onClick={cambiarNombreNevera} className="button-save">
+            Guardar
+          </button>
+        )}
+        <FaEdit
+          onClick={cambiarNombreNevera}
+          style={{ cursor: "pointer", marginLeft: "5px" }}
+          className="edit-icon"
+        />
+      </h1>
 
       {nevera.productos && (
-        <div>
-          <h2>Productos en la Nevera</h2>
-          {error && <p style={{ color: 'red' }}>{error}</p>} {/* Mostrar error si está presente */}
-          <ul>
-            {nevera.productos.map(producto => (
-              <li key={producto.nombre}>{producto.nombre} - {producto.cantidad} {producto.tipo}
-                {productoEditando == producto ? (
-                  <div>
-                    <input type="text" value={nombreEditando} onChange={e => setNombreEditando(e.target.value)} />
-                    <input type="number" value={cantidadEditando} onChange={e => setCantidadEditando(e.target.value)} />
-                    <select value={tipoEditando} onChange={e => setTipoEditando(e.target.value)}>
+        <div className="productos-container">
+          <h2 className="subtitle">Productos en la Nevera</h2>
+          {error && <p className="error-message">{error}</p>} {/* Mostrar error si está presente */}
+          <ul className="productos-list">
+            {nevera.productos.map((producto) => (
+              <li key={producto.nombre} className="producto-item">
+                {productoEditando === producto ? (
+                  <div className="producto-editing">
+                    <input
+                      type="text"
+                      value={nombreEditando}
+                      onChange={(e) => setNombreEditando(e.target.value)}
+                      className="input-edit"
+                    />
+                    <input
+                      type="number"
+                      value={cantidadEditando}
+                      onChange={(e) => setCantidadEditando(e.target.value)}
+                      className="input-edit"
+                    />
+                    <select
+                      value={tipoEditando}
+                      onChange={(e) => setTipoEditando(e.target.value)}
+                      className="select-edit"
+                    >
                       <option value="">Selecciona el tipo</option>
                       <option value="unidades">Unidades</option>
                       <option value="kg">Kg</option>
                       <option value="litros">Litros</option>
                     </select>
-                    <button onClick={handleCancelarEdicion}>Cancelar</button>
-                    <button onClick={handleGuardarCambios}>Guardar</button>
+                    <button onClick={handleCancelarEdicion} className="button-cancel">
+                      Cancelar
+                    </button>
+                    <button onClick={handleGuardarCambios} className="button-save">
+                      Guardar
+                    </button>
                   </div>
                 ) : (
                   <>
-                    <FaEdit onClick={() => editarProducto(producto)} style={{ cursor: "pointer", marginLeft: "5px" }} />
-                    <FaTrash onClick={() => eliminarProducto(producto.nombre)} style={{ cursor: "pointer", marginLeft: "5px" }} />
+                    {producto.nombre} - {producto.cantidad} {producto.tipo}
+                    <FaEdit
+                      onClick={() => editarProducto(producto)}
+                      style={{ cursor: "pointer", marginLeft: "5px" }}
+                      className="edit-icon"
+                    />
+                    <FaTrash
+                      onClick={() => eliminarProducto(producto.nombre)}
+                      style={{ cursor: "pointer", marginLeft: "5px" }}
+                      className="trash-icon"
+                    />
                   </>
                 )}
               </li>
@@ -205,21 +275,43 @@ const Nevera = () => {
           </ul>
         </div>
       )}
-      <div>
-        <h2>Añadir Nuevo Producto</h2>
-        <input type="text" placeholder="Nombre del Producto" value={nuevoProducto} onChange={e => setNuevoProducto(e.target.value)} />
-        <input type="number" placeholder="Cantidad" value={nuevaCantidad} onChange={e => setNuevaCantidad(e.target.value)} />
-        <select value={tipoCantidad} onChange={e => setTipoCantidad(e.target.value)}>
-          <option value="">Selecciona el tipo</option>
-          <option value="unidades">Unidades</option>
-          <option value="kg">Kg</option>
-          <option value="litros">Litros</option>
-        </select>
-        <button onClick={agregarProducto}>Agregar Producto</button>
+      <div className="añadir-container">
+        <h2 className="subtitle">Añadir Nuevo Producto</h2>
+        <div className="nuevo-producto-container">
+          <input
+            type="text"
+            placeholder="Nombre del Producto"
+            value={nuevoProducto}
+            onChange={(e) => setNuevoProducto(e.target.value)}
+            className="input-add"
+          />
+          <input
+            type="number"
+            placeholder="Cantidad"
+            value={nuevaCantidad}
+            onChange={(e) => setNuevaCantidad(e.target.value)}
+            className="input-add"
+          />
+          <select
+            value={tipoCantidad}
+            onChange={(e) => setTipoCantidad(e.target.value)}
+            className="select-add"
+          >
+            <option value="">Selecciona el tipo</option>
+            <option value="unidades">Unidades</option>
+            <option value="kg">Kg</option>
+            <option value="litros">Litros</option>
+          </select>
+          <button onClick={agregarProducto} className="button-add">
+            Agregar Producto
+          </button>
+        </div>
       </div>
-
     </div>
   );
+
+
+
 };
 
 export default Nevera;

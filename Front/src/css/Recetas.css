@@ -1,0 +1,57 @@
+.page-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.error-message {
+    color: red;
+    margin-bottom: 20px;
+}
+
+.button-container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.search-container {
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.create-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+.recipe-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.recipe-list li {
+    margin-bottom: 10px;
+}
+
+.button-group button {
+    margin-right: 10px;
+}
+.search-container input[type="text"],.search-container button  {
+    width: 300px;
+    padding: 10px;
+    font-size: 16px;
+}
+.search-container button{
+    margin-top: 0px;
+    margin-left: 90px;
+}

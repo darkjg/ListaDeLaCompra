@@ -34,3 +34,23 @@
     margin-right: 10px;
   }
   
+  .flex-container {
+    display: flex;
+    align-items: center; 
+  }
+  
+  .button-container {
+    display: flex;
+    align-items: center; 
+  }
+  
+  .button-container > * {
+    margin-right: 10px;
+  }
+  .list-item {
+
+    flex-direction: column;
+  }
+  .buton-Create{
+    margin-top: 0px;
+  }

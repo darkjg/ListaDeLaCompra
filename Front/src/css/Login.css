@@ -1,0 +1,14 @@
+.page-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.error-message {
+    /* Estilos para el mensaje de error */
+    /* Por ejemplo: */
+    color: red;
+    margin-top: 10px;
+    font-size: 14px;
+}
