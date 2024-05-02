@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SERVER_URL from "../Config/config";
-
+import "../css/Lista.css"
 const ListaDeComprasPage = () => {
     const [email, setEmail] = useState("");
     const [listas, setListas] = useState([]);
@@ -39,43 +39,36 @@ const ListaDeComprasPage = () => {
     };
 
     const BuscarListasPorEmail = async () => {
-        if (email)
-            try {
-                const response = await fetch(`${SERVER_URL}/lista/buscar/${email}`);
-
-                if (response.ok) {
-                    setError(null)
-
-                    const data = await response.json();
-                    try {
-                        data.map(async list => {
-                            const response2 = await fetch(`${SERVER_URL}/lista/${list}`);
-                            if (response2.ok) {
-                                setError(null)
-                                const data2 = await response2.json();
-                                const listaExists = listas.some(lista => lista.id == data2.id);
-                                if (!listaExists) {
-                                    setListas([...listas, data2]);
-                                }
-                            } else {
-                                setError("Error al buscar listas por id");
-                            }
-                        })
-
-                    } catch (error) {
-
+        try {
+            const email = localStorage.getItem("user");
+            if (!email) return;
+    
+            const response = await fetch(`${SERVER_URL}/lista/buscar/${email}`);
+    
+            if (response.ok) {
+                setError(null);
+    
+                const data = await response.json();
+                const newListas = [];
+                for (const listId of data) {
+                    const response2 = await fetch(`${SERVER_URL}/lista/${listId}`);
+                    if (response2.ok) {
+                        const data2 = await response2.json();
+                        newListas.push(data2);
+                    } else {
+                        setError("Error al buscar listas por id");
                     }
-
-
-                } else {
-                    setError("Error al buscar listas");
                 }
-            } catch (error) {
-                console.error("Error al buscar listas:", error);
+                setListas(newListas);
+            } else {
                 setError("Error al buscar listas");
             }
+        } catch (error) {
+            console.error("Error al buscar listas:", error);
+            setError("Error al buscar listas");
+        }
     };
-
+    
     const EliminarLista = async (listaEnvio) => {
 
         try {
@@ -101,34 +94,43 @@ const ListaDeComprasPage = () => {
         }
     };
 
-    return (
-        <div>
-            <h1>Lista de Compras</h1>
-            {email && (
-                <div>
-                    <h3>Usuario: {email}</h3>
-                    <button onClick={CrearLista}>Crear Lista</button>
-                </div>
-            )}
-            {listas.length > 0 && (
-                <div>
-                    <h2>Listas:</h2>
-                    <ul>
-                        {listas.map(lista => (
-
-                            <li key={lista.id}>
-
+       return (
+        <div className="page-content">
+            <div className="container">
+             
+                {email && (
+                    <div className="card">
+                        <div className="flex-container">
+                            <div>
+                                <h3>Usuario: {email}</h3>
+                            </div>
+                            <button onClick={CrearLista}>Crear Lista</button>
+                        </div>
+                    </div>
+                )}
+                <h2>Listas:</h2>
+                {listas.length > 0 && (
+                    
+                <div className="flex-container">
+                    
+                    {listas.map(lista => (
+                        <div key={lista.id} className="card">
+                            <div className="flex-container">
                                 <Link to={`/lista/${lista._id}`}>{lista.NombreLista}</Link>
-                                <button onClick={() => BuscarListasPorEmail()}>Buscar Listas</button>
-                                <button onClick={() => EliminarLista(lista)}>Eliminar</button>
-                            </li>
-                        ))}
-                    </ul>
+                                <div className="button-container">
+                                   
+                                    <button onClick={() => EliminarLista(lista)}>Eliminar</button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
-            {error && <p>{error}</p>}
+                {error && <p>{error}</p>}
+            </div>
         </div>
     );
+
 };
 
 export default ListaDeComprasPage;

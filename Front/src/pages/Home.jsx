@@ -1,52 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SERVER_URL from "../Config/config";
-
+import "../css/Home.css";
 const Home = ({ isLoggedIn }) => {
   const [listas, setListas] = useState([]);
   const [recetaMes, setRecetaMes] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
- 
+
     if (isLoggedIn) {
       BuscarListasPorEmail();
     }
     ObtenerRecetaMes();
-  }, [isLoggedIn]); 
+  }, [isLoggedIn]);
 
   const BuscarListasPorEmail = async () => {
     try {
-      const email = localStorage.getItem("user");
-      if (!email) return; 
+        const email = localStorage.getItem("user");
+        if (!email) return;
 
-      
-      const response = await fetch(`${SERVER_URL}/lista/buscar/${email}`);
+        const response = await fetch(`${SERVER_URL}/lista/buscar/${email}`);
 
-      if (response.ok) {
-        setError(null);
+        if (response.ok) {
+            setError(null);
 
-        const data = await response.json();
-        
-        data.forEach(async list => {
-         
-          const response2 = await fetch(`${SERVER_URL}/lista/${list}`);
-          if (response2.ok) {
-            const data2 = await response2.json();
-            
-            setListas(prevListas => [...prevListas, data2]); 
-          } else {
-            setError("Error al buscar listas por id");
-          }
-        });
-      } else {
-        setError("Error al buscar listas");
-      }
+            const data = await response.json();
+            const newListas = [];
+            for (const listId of data) {
+                const response2 = await fetch(`${SERVER_URL}/lista/${listId}`);
+                if (response2.ok) {
+                    const data2 = await response2.json();
+                    newListas.push(data2);
+                } else {
+                    setError("Error al buscar listas por id");
+                }
+            }
+            setListas(newListas);
+        } else {
+            setError("Error al buscar listas");
+        }
     } catch (error) {
-      console.error("Error al buscar listas:", error);
-      setError("Error al buscar listas");
+        console.error("Error al buscar listas:", error);
+        setError("Error al buscar listas");
     }
-  };
+};
+
 
   const ObtenerRecetaMes = async () => {
     try {
@@ -63,37 +62,57 @@ const Home = ({ isLoggedIn }) => {
       setError("Error al obtener la receta del mes");
     }
   };
-
   return (
-    <div>
-      <h1>Página de inicio</h1>
-      <p>{error}</p>
-      {isLoggedIn && (
-        <div>
-          <h2>Listas de Compras:</h2>
-          <ul>
-            {listas.map(lista => (
-              <li key={lista.id}>
-                <div>{lista.NombreLista}</div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <div>
-        <h2>Receta del Mes:</h2>
-        {recetaMes ? (
-          <div>
-            <h3>{recetaMes.nombre}</h3>
-            <p>{recetaMes.explicacion}</p>
+    <div className="page-content">
+      <div className="container">
+        <p>{error}</p>
+  
+        {!isLoggedIn && (
+          <div className="flex-container">
+            <div className="card">
+              <h2>Receta del Mes:</h2>
+              <div className="center">
+                {recetaMes ? (
+                  <div>
+                    <h3>{recetaMes.nombre}</h3>
+                    <p>{recetaMes.explicacion}</p>
+                  </div>
+                ) : (
+                  <p>Cargando receta del mes...</p>
+                )}
+              </div>
+            </div>
           </div>
-        ) : (
-          <p>Cargando receta del mes...</p>
         )}
-        {error && <p>{error}</p>}
+        {isLoggedIn && (
+          <div className="flex-container">
+            <div className="card">
+              <h2>Listas de Compras:</h2>
+              {listas.map(lista => (
+                <div key={lista.id} className="center">
+                  <Link to={`/lista/${lista._id}`}>{lista.NombreLista}</Link>
+                </div>
+              ))}
+            </div>
+            <div className="card">
+              <h2>Receta del Mes:</h2>
+              <div className="center">
+                {recetaMes ? (
+                  <div>
+                    <h3>{recetaMes.nombre}</h3>
+                    <p>{recetaMes.explicacion}</p>
+                  </div>
+                ) : (
+                  <p>Cargando receta del mes...</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
 
 export default Home;

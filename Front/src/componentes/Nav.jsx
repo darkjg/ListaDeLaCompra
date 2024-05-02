@@ -30,7 +30,7 @@ function Navbar({ isLoggedIn, handleLogout }) {
                 <button className="menu-toggle" onClick={toggleMenu}>
                     ☰
                 </button>
-                {isLoggedIn && <div className="user">{user}</div>}
+               
             </div>
 
             <ul className={isMenuOpen ? "menu" : "menu hidden"}>

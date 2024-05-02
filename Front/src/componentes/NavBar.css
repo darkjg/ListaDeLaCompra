@@ -53,6 +53,23 @@
 .user {
   align-self: flex-start;
   margin-right: 10px; 
-  white-space: nowrap; /* Evita que el nombre de usuario se divida en múltiples líneas */
-  overflow: hidden;/* Añade un espacio entre el botón de menú y el nombre de usuario */
+  white-space: nowrap; 
+  overflow: hidden;
+}
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+
+
+.completed {
+  text-decoration: line-through;
 }

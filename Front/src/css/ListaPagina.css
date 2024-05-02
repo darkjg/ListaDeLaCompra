@@ -1,0 +1,105 @@
+.page-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  
+  .container {
+    max-width: 600px;
+    padding: 20px;
+  }
+  
+  h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .add-product-container {
+    display: flex;
+    gap: 5px;
+    justify-content: space-between;
+  }
+  
+  .input-container {
+    width: calc(70% - 10px); 
+    margin-right: 10px; 
+  }
+  
+  .select-container {
+    width: calc(30% - 10px);
+    margin-left: 10px;
+  }
+  
+  input[type="text"],
+  input[type="number"],
+  select {
+    
+    padding: 10px;
+    width: 100%;
+  }
+  
+  button {
+    padding: 8px 16px;
+    margin-top: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+  }
+  
+  li:last-child {
+    border-bottom: none;
+  }
+  
+  .add-product-button {
+    width: calc(100% - 10px); 
+    padding: 8px 16px;
+    margin-top: 0; 
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
+  }
+  .add-product-button:hover {
+    background-color: #0056b3;
+  }
+  .completed {
+    text-decoration: line-through;
+  }
+  
+  .product-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+    white-space: nowrap;
+    padding: 5px;
+  }
+  
+  .product-info div {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+  }
+  

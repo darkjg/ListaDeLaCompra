@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import SERVER_URL from "../Config/config";
-
+import "../css/ListaPagina.css"
 
 
 
@@ -196,48 +196,90 @@ const ListaPagina = () => {
 
 
     return (
-        <div>
-            {error && <p>{error}</p>}
-            {lista && (
-                <div>
-                    <h1>{lista.NombreLista}</h1>
-                    <button onClick={completarLista}>Completar Lista</button>
+        <div className="page-content">
+            <div className="container">
+                {error && <p>{error}</p>}
+                {lista && (
                     <div>
-                        <h2>Cambiar nombre de la lista:</h2>
-                        <input type="text" value={nuevoNombreLista} onChange={ChangeNombreLista} />
-                        <button onClick={ActualizarNombreLista}>Actualizar Nombre</button>
-                    </div>
-                    <div>
+                        <h1>{lista.NombreLista}</h1>
+                        <button onClick={completarLista}>Completar Lista</button>
+                        <div>
+                            <h2>Cambiar nombre de la lista:</h2>
+                            <input
+                                type="text"
+                                value={nuevoNombreLista}
+                                onChange={ChangeNombreLista}
+                            />
+                            <button onClick={ActualizarNombreLista}>
+                                Actualizar Nombre
+                            </button>
+                        </div>
                         <h2>Añadir producto:</h2>
-                        <input type="text" placeholder="Nombre del producto" value={nuevoProducto} onChange={ChangeNuevoProducto} required />
-                        <input type="number" placeholder="Cantidad" value={nuevaCantidad} onChange={ChangeNuevaCantidad} required />
-                        <select value={tipoCantidad} onChange={ChangeTipoCantidad} required>
-                            <option value="">Selecciona...</option>
-                            <option value="unidades">Unidades</option>
-                            <option value="kg">Kg</option>
-                            <option value="litros">Litros</option>
-                        </select>
-                        <button onClick={AgregarProducto}>Añadir Producto</button>
+                        <div className="add-product-container">
+                            <div className="input-container">
+
+                                <input
+                                    type="text"
+                                    placeholder="Nombre del producto"
+                                    value={nuevoProducto}
+                                    onChange={ChangeNuevoProducto}
+                                    required
+                                />
+                            </div>
+                            <div className="input-container">
+                                <input
+                                    type="number"
+                                    placeholder="Cantidad"
+                                    value={nuevaCantidad}
+                                    onChange={ChangeNuevaCantidad}
+                                    required
+                                />
+                            </div>
+                            <div className="select-container">
+                                <select
+                                    value={tipoCantidad}
+                                    onChange={ChangeTipoCantidad}
+                                    required
+                                >
+                                    <option value="">Selecciona...</option>
+                                    <option value="unidades">Unidades</option>
+                                    <option value="kg">Kg</option>
+                                    <option value="litros">Litros</option>
+                                </select>
+                            </div>
+                            <button className="add-product-button" onClick={AgregarProducto}>Añadir Producto</button>
+                        </div>
+
+                        <div>
+                            <h2>Productos:</h2>
+                            <ul>
+                                {lista.Productos.map((producto, index) => (
+                                    <li
+                                        key={producto.nombre}
+                                        className={producto.comprado ? "completed" : ""}
+                                        onClick={() =>
+                                            index >= 0 &&
+                                            index < lista.Productos.length &&
+                                            marcarComprado(index)
+                                        }
+                                    >
+                                        <div className="product-info">
+                                            <div>Nombre: {producto.nombre}</div>
+                                            <div>Cantidad: {producto.cantidad} {producto.tipo}</div>
+                                        </div>
+                                        <button onClick={() => EliminarProducto(producto.nombre)}>
+                                            Eliminar
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
-
-                    <div>
-                        <h2>Productos:</h2>
-                        <ul>
-                            {lista.Productos.map((producto, index) => (
-                                <li key={producto.nombre} style={{ textDecoration: producto.comprado ? "line-through" : "none" }} onClick={() => index >= 0 && index < lista.Productos.length && marcarComprado(index)}>
-                                    <div>{producto.nombre} :{producto.cantidad} {producto.tipo}</div>
-                                    <button onClick={() => EliminarProducto(producto.nombre)}>Eliminar</button>
-                                </li>
-                            ))}
-
-
-                        </ul>
-                    </div>
-                </div>
-            )}
-
+                )}
+            </div>
         </div>
     );
-};
+}
+
 
 export default ListaPagina;
