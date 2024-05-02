@@ -2,7 +2,7 @@ const express = require("express");
 const session = require("express-session");
 const app = express();
 const cors = require("cors");
-const { dbConnection } = require("./config/db");
+const { dbConnection } = require("./Config/db");
 const PORT = 3000;
 const ProductosRoutes = require("./routes/productoRoutes");
 app.use(cors());
